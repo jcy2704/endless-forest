@@ -1,34 +1,33 @@
 import Phaser from 'phaser';
-import background from './assets/background.png';
 import './css/main.css';
-
-class MyGame extends Phaser.Scene {
-  constructor() {
-    super();
-  }
-
-  heroload() {
-
-  }
-
-  preload() {
-    this.load.image('background', background);
-  }
-
-  create() {
-    const bg = this.add.image(462, 270, 'background');
-  }
-}
+import Background from './scenes/background';
 
 const config = {
   type: Phaser.AUTO,
   parent: 'phaser-example',
-  width: 924,
-  height: 540,
+  width: 1250,
+  height: 725,
   scale: {
     autoCenter: Phaser.Scale.CENTER_BOTH
   },
-  scene: MyGame
+  scene: [Background]
 };
 
 const game = new Phaser.Game(config);
+
+// this.load.spritesheet('player', player, {
+//   frameWidth: 104,
+//   frameHeight: 64
+// });
+// this.anims.create({
+//   key: 'run',
+//   frames: this.anims.generateFrameNumbers('player', {
+//     start: 0,
+//     end: 5
+//   }),
+//   frameRate: 8,
+//   repeat: -1
+// });
+
+// this.player = this.add.sprite(462, 270, 'player');
+// this.player.anims.play('run');
