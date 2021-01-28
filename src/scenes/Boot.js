@@ -25,20 +25,15 @@ export default class Boot extends Phaser.Scene {
     });
     title.setOrigin(0.5, 0.5)
 
-    this.time.addEvent({
-      delay: 4000,
-      callback: this.onEvent,
-      callbackScope: this,
-      startAt: 2000
-    });
+    this.cameras.main.fadeIn(1000, 0, 0, 0);
+
+    this.time.delayedCall(2000, () => {
+      this.cameras.main.fadeOut(1000, 0, 0, 0);
+    })
 
     this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (cam, effect) => {
-      this.scene.start('preLoader')
+      this.scene.start('preLoader');
     });
 
-  }
-
-  onEvent() {
-    this.cameras.main.fadeOut(1000, 0, 0, 0);
   }
 }

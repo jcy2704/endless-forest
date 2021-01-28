@@ -62,8 +62,8 @@ export default class PreLoad extends Phaser.Scene {
     this.load.image('floor', floor);
 
     this.load.spritesheet('player', player, {
-      frameWidth: 104,
-      frameHeight: 64
+      frameWidth: 63.5,
+      frameHeight: 59
     });
 
     this.load.on('progress', function (value) {
@@ -81,7 +81,7 @@ export default class PreLoad extends Phaser.Scene {
     });
   }
 
-  create() {
-    this.scene.start('background');
+  update() {
+    this.scene.start('title-screen');
   }
 }

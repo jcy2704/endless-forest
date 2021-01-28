@@ -8,43 +8,13 @@ import lights_2 from '../assets/background/Lights 6.png';
 import bgTree_4 from '../assets/background/BGTrees 7.png';
 import upTree from '../assets/background/UpTrees 8.png';
 import floor from '../assets/background/Floor 9.png';
-import player from '../assets/player_run.png'
-/**
- *
- * @param {Phaser.Scene} scene
- * @param {number} heightDiff
- * @param {string} image
- * @param {boolean} origin
- * @param {number} widthDiff
- */
-
-const createAligned = (scene, heightDiff, image, origin, widthDiff = 0) => {
-  let x = 0;
-  let l = scene.scale.width / 2;
-  let m;
-  const h = scene.textures.get(image).getSourceImage().height;
-  if (image === 'upTree') {
-    m = scene.add.tileSprite(x, 0 + heightDiff, scene.scale.width, h, image)
-      .setOrigin(0, 0);
-
-    x += m.width;
-  } else if (origin === true && image != 'upTree') {
-    m = scene.add.tileSprite(x, scene.scale.height + heightDiff, scene.scale.width, h, image)
-      .setOrigin(0, 1);
-
-    x += m.width;
-  } else {
-    m = scene.add.tileSprite(l + widthDiff, scene.scale.height / 2 + heightDiff, scene.scale.width, h, image)
-
-    l += m.width;
-  }
-
-  return m;
-}
+import player from '../assets/player_run.png';
+import platform from '../assets/platform.png';
+import createAligned from '../javascript/createAligned';
 
 export default class Background extends Phaser.Scene {
   constructor() {
-    super('background');
+    super('game');
   }
 
   preload() {
@@ -57,6 +27,7 @@ export default class Background extends Phaser.Scene {
     this.load.image('bgTree_4', bgTree_4);
     this.load.image('upTree', upTree);
     this.load.image('floor', floor);
+    this.load.image('platform', platform);
 
     this.cursors = this.input.keyboard.createCursorKeys();
 
@@ -65,12 +36,13 @@ export default class Background extends Phaser.Scene {
     this.counter = 1;
 
     this.load.spritesheet('player', player, {
-      frameWidth: 104,
-      frameHeight: 64
+      frameWidth: 63.5,
+      frameHeight: 55
     });
   }
 
   create() {
+    this.cameras.main.fadeIn(1000, 0, 0, 0);
     this.alive = true;
     const bgh = this.textures.get('background').getSourceImage().height;
 
@@ -84,6 +56,8 @@ export default class Background extends Phaser.Scene {
     this.bg5 = createAligned(this, 100, 'lights_2', false);
     this.bg6 = createAligned(this, -45, 'bgTree_4', true);
     this.bg7 = createAligned(this, 0, 'upTree', true);
+    this.platform = this.physics.add.sprite(0, this.height-10, 'platform')
+      .setOrigin(0, 1);
     this.bg8 = createAligned(this, 10, 'floor', true, -250);
 
     this.anims.create({
@@ -92,12 +66,16 @@ export default class Background extends Phaser.Scene {
         start: 0,
         end: 5
       }),
-      frameRate: 13,
+      frameRate: 10,
       repeat: -1
     });
 
-    this.player = this.add.sprite(200, this.height - 90, 'player');
+    this.player = this.physics.add.sprite(200, this.height - 90, 'player');
     this.player.anims.play('run');
+    this.player.setGravityY(900);
+
+    this.physics.add.collider(this.player, this.platform);
+    this.platform.setImmovable();
   }
 
   update() {
