@@ -8,7 +8,7 @@ import lights_2 from '../assets/background/Lights 6.png';
 import bgTree_4 from '../assets/background/BGTrees 7.png';
 import upTree from '../assets/background/UpTrees 8.png';
 import floor from '../assets/background/Floor 9.png';
-
+import player from '../assets/player_run.png'
 /**
  *
  * @param {Phaser.Scene} scene
@@ -63,6 +63,11 @@ export default class Background extends Phaser.Scene {
     this.width = this.scale.width;
     this.height = this.scale.height;
     this.counter = 1;
+
+    this.load.spritesheet('player', player, {
+      frameWidth: 104,
+      frameHeight: 64
+    });
   }
 
   create() {
@@ -80,12 +85,22 @@ export default class Background extends Phaser.Scene {
     this.bg6 = createAligned(this, -45, 'bgTree_4', true);
     this.bg7 = createAligned(this, 0, 'upTree', true);
     this.bg8 = createAligned(this, 10, 'floor', true, -250);
+
+    this.anims.create({
+      key: 'run',
+      frames: this.anims.generateFrameNumbers('player', {
+        start: 0,
+        end: 5
+      }),
+      frameRate: 13,
+      repeat: -1
+    });
+
+    this.player = this.add.sprite(200, this.height - 90, 'player');
+    this.player.anims.play('run');
   }
 
   update() {
-    const cam = this.cameras.main;
-    const speed = 5;
-
     if (this.cursors.right.isDown) {
       this.alive = false;
     } else if (this.cursors.left.isDown) {
