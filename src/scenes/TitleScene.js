@@ -31,29 +31,40 @@ export default class TitleScene extends Phaser.Scene {
 
     const title = this.make.text({
       x: this.width/2,
-      y: this.height/2 - 160,
+      y: this.height/2 - 140,
       text: 'ENDLESS RUNNER',
       style: {
-        fontSize: '75px',
+        fontSize: '90px',
         fill: '#ffffff',
         fontFamily: 'Arcadia, monospace'
       }
     });
     title.setOrigin(0.5, 0.5)
 
-    this.playBtn = this.add.image(this.width/2, this.height/2 - 25, 'play').setInteractive({ useHandCursor: true }).setOrigin(0.5, 0.5)
+    this.playBtn = this.add.image(this.width/2, this.height/2, 'play').setInteractive({ useHandCursor: true }).setOrigin(0.5, 0.5)
       .on('pointerdown', () => this.playIsPressed() )
       .on('pointerup', () => {
         this.playNotPressed();
-        this.cameras.main.fadeOut(1000, 0, 0, 0)
-        this.scene.start('game');
+        this.start();
       });
 
-    this.exitBtn = this.add.image(this.width/2, this.height/2 + 70, 'exit').setInteractive({ useHandCursor: true }).setOrigin(0.5, 0.5)
+    this.exitBtn = this.add.image(this.width/2, this.height/2 + 100, 'exit').setInteractive({ useHandCursor: true }).setOrigin(0.5, 0.5)
       .on('pointerdown', () => this.exitIsPressed() )
       .on('pointerup', () => {
         this.exitNotPressed();
       });
+
+    ['A', 'S', 'SPACE'].forEach(key => {
+      const keyP = this.input.keyboard.addKey(key);
+      keyP.on('down', () => {
+        this.start();
+      });
+    })
+  }
+
+  start() {
+    this.cameras.main.fadeOut(1000, 0, 0, 0);
+    this.scene.start('game');
   }
 
   update() {
