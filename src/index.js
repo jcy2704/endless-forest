@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import './css/main.css';
-import Background from './scenes/Game';
+import Game from './scenes/Game';
 import Boot from './scenes/Boot';
 import PreLoader from './scenes/PreLoader';
 import titleScene from './scenes/TitleScene';
@@ -20,7 +20,7 @@ window.onload = () => {
         debug: true
       }
     },
-    scene: [Boot, PreLoader, titleScene, Background]
+    scene: [Boot, PreLoader, titleScene, Game]
   };
 
   const game = new Phaser.Game(config);

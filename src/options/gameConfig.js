@@ -1,5 +1,5 @@
 // global game options
-let gameOptions = {
+export default {
 
     // platform speed range, in pixels per second
     platformSpeedRange: [300, 300],
@@ -27,7 +27,7 @@ let gameOptions = {
     playerGravity: 900,
 
     // player jump force
-    jumpForce: 400,
+    jumpForce: 500,
 
     // player starting X position
     playerStartPosition: 200,

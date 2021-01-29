@@ -18,6 +18,7 @@ import exitPressed from '../assets/buttons/pressed/exit.png';
 import player_jump from '../assets/player/player_jump.png';
 import player_falling from '../assets/player/player_falling.png';
 import player_attack from '../assets/player/player_attack.png';
+import player_dead from '../assets/player/player_dead.png';
 
 export default class PreLoad extends Phaser.Scene {
   constructor() {
@@ -81,8 +82,8 @@ export default class PreLoad extends Phaser.Scene {
     });
 
     this.load.spritesheet('player_rest', player_rest, {
-      frameWidth: 32,
-      frameHeight: 59
+      frameWidth: 33.7,
+      frameHeight: 60
     });
 
     this.load.spritesheet("player_jump", player_jump, {
@@ -98,7 +99,12 @@ export default class PreLoad extends Phaser.Scene {
     this.load.spritesheet("player_attack", player_attack, {
       frameWidth: 86,
       frameHeight: 75
-  });
+    });
+
+    this.load.spritesheet("player_dead", player_dead, {
+      frameWidth: 73,
+      frameHeight: 60
+    });
 
     this.load.on('progress', function (value) {
       progressBar.clear();
@@ -125,6 +131,15 @@ export default class PreLoad extends Phaser.Scene {
       frameRate: 10,
       repeat: -1
     });
+
+    this.anims.create({
+      key: "dead",
+      frames: this.anims.generateFrameNumbers('player_dead', {
+          start: 0,
+          end: 6
+      }),
+      frameRate: 4
+  });
 
     this.anims.create({
       key: 'rest',
@@ -156,7 +171,7 @@ export default class PreLoad extends Phaser.Scene {
 
   this.anims.create({
     key: "attack",
-    frames: this.anims.generateFrameNumbers('player', {
+    frames: this.anims.generateFrameNumbers('player_attack', {
         start: 0,
         end: 6
     }),

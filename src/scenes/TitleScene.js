@@ -26,8 +26,8 @@ export default class TitleScene extends Phaser.Scene {
     this.bg7 = createAligned(this, 0, 'upTree', true);
     this.bg8 = createAligned(this, 10, 'floor', true, -250);
 
-    this.player = this.physics.add.sprite(200, this.height - 90, 'player_rest');
-    this.player.anims.play('rest')
+    this.player = this.add.sprite(200, this.height - 95, 'player_rest');
+    this.player.anims.play('rest');
 
     const title = this.make.text({
       x: this.width/2,
@@ -54,17 +54,19 @@ export default class TitleScene extends Phaser.Scene {
         this.exitNotPressed();
       });
 
-    ['A', 'S', 'SPACE'].forEach(key => {
-      const keyP = this.input.keyboard.addKey(key);
-      keyP.on('down', () => {
-        this.start();
-      });
-    })
+    // ['A', 'S', 'SPACE', 'ENTER'].forEach(key => {
+    //   const keyP = this.input.keyboard.addKey(key);
+    //   keyP.on('down', () => {
+    //     this.start();
+    //   });
+    // });
+
+    this.input.keyboard.on('keydown', this.start, this);
   }
 
   start() {
     this.cameras.main.fadeOut(1000, 0, 0, 0);
-    this.scene.start('game');
+    this.scene.start('game-start');
   }
 
   update() {
