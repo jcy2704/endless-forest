@@ -17,6 +17,9 @@ export default class Game extends Phaser.Scene {
   create() {
     this.cameras.main.fadeIn(1000, 0, 0, 0);
     this.alive = true;
+    this.playerJumps = 0;
+    this.playerDrops = 0;
+
     const bgh = this.textures.get('background').getSourceImage().height;
 
     this.add.tileSprite(0, this.height, this.width, bgh, 'background')
@@ -40,7 +43,7 @@ export default class Game extends Phaser.Scene {
     this.player.setGravityY(900);
 
     this.physics.add.collider(this.player, this.bg8, () => {
-      if(!this.player.anims.isPlaying){
+      if (!this.player.anims.isPlaying) {
         this.player.setTexture('player');
         this.player.anims.play("run", true);
       }
@@ -50,7 +53,6 @@ export default class Game extends Phaser.Scene {
       this.player.setPosition(200, this.height - 104)
     })
 
-    this.playerJumps = 0;
     const keys = this.input.keyboard.addKeys({
       space: 'SPACE',
       a: 'A',
@@ -59,12 +61,10 @@ export default class Game extends Phaser.Scene {
 
     keys.space.on('down', this.jump, this);
     keys.a.on('down', this.attack, this);
-    keys.s.on('down', this.instaDown, this);
+    keys.s.on('down', this.instaDrop, this);
   }
 
   update() {
-    console.log(this.player.y)
-
     if (this.player.body.velocity.y > 20 && this.alive && !this.player.anims.isPlaying) {
       this.player.anims.play('falling', true);
     }
@@ -110,7 +110,13 @@ export default class Game extends Phaser.Scene {
     })
   }
 
-  instaDown() {
-    this.player.setVelocityY(200);
+  instaDrop() {
+    if ((this.alive) && (!this.player.body.touching.down || (this.playerDrops > 0 && this.playerJumps < gameOptions.drops))) {
+      if (this.player.body.touching.down) {
+        this.playerDrops = 0;
+      }
+      this.player.setVelocityY(200);
+      this.playerDrops += 1;
+    }
   }
 }

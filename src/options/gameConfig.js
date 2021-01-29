@@ -1,5 +1,6 @@
 // global game options
 export default {
+    drop: 1,
 
     // platform speed range, in pixels per second
     platformSpeedRange: [300, 300],
