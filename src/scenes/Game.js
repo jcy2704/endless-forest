@@ -1,15 +1,4 @@
 import Phaser from 'phaser';
-import background from '../assets/background/Background 1.png';
-import bgTree_1 from '../assets/background/BGTrees 2.png';
-import lights_1 from '../assets/background/Lights 3.png';
-import bgTree_2 from '../assets/background/BGTrees 4.png';
-import bgTree_3 from '../assets/background/BGTrees 5.png';
-import lights_2 from '../assets/background/Lights 6.png';
-import bgTree_4 from '../assets/background/BGTrees 7.png';
-import upTree from '../assets/background/UpTrees 8.png';
-import floor from '../assets/background/Floor 9.png';
-import player from '../assets/player_run.png';
-import platform from '../assets/platform.png';
 import createAligned from '../javascript/createAligned';
 
 export default class Background extends Phaser.Scene {
@@ -18,27 +7,10 @@ export default class Background extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image('background', background);
-    this.load.image('bgTree_1', bgTree_1);
-    this.load.image('lights_1', lights_1);
-    this.load.image('lights_2', lights_2);
-    this.load.image('bgTree_2', bgTree_2);
-    this.load.image('bgTree_3', bgTree_3);
-    this.load.image('bgTree_4', bgTree_4);
-    this.load.image('upTree', upTree);
-    this.load.image('floor', floor);
-    this.load.image('platform', platform);
-
     this.cursors = this.input.keyboard.createCursorKeys();
 
     this.width = this.scale.width;
     this.height = this.scale.height;
-    this.counter = 1;
-
-    this.load.spritesheet('player', player, {
-      frameWidth: 63.5,
-      frameHeight: 55
-    });
   }
 
   create() {
@@ -56,19 +28,9 @@ export default class Background extends Phaser.Scene {
     this.bg5 = createAligned(this, 100, 'lights_2', false);
     this.bg6 = createAligned(this, -45, 'bgTree_4', true);
     this.bg7 = createAligned(this, 0, 'upTree', true);
-    this.platform = this.physics.add.sprite(0, this.height-10, 'platform')
+    this.platform = this.physics.add.sprite(10, this.height-10, 'platform')
       .setOrigin(0, 1);
     this.bg8 = createAligned(this, 10, 'floor', true, -250);
-
-    this.anims.create({
-      key: 'run',
-      frames: this.anims.generateFrameNumbers('player', {
-        start: 0,
-        end: 5
-      }),
-      frameRate: 10,
-      repeat: -1
-    });
 
     this.player = this.physics.add.sprite(200, this.height - 90, 'player');
     this.player.anims.play('run');
@@ -93,5 +55,9 @@ export default class Background extends Phaser.Scene {
         bg.tilePositionX += fact[index];
       })
     }
+  }
+
+  jump() {
+    
   }
 }

@@ -1,7 +1,3 @@
-import playBtn from '../assets/buttons/play.png';
-import exitBtn from '../assets/buttons/exit.png';
-import playPressed from '../assets/buttons/pressed/play.png';
-import exitPressed from '../assets/buttons/pressed/exit.png';
 import createAligned from '../javascript/createAligned';
 
 export default class TitleScene extends Phaser.Scene {
@@ -10,11 +6,6 @@ export default class TitleScene extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image('play', playBtn);
-    this.load.image('exit', exitBtn);
-    this.load.image('playPressed', playPressed);
-    this.load.image('exitPressed', exitPressed);
-
     this.width = this.scale.width;
     this.height = this.scale.height;
   }
@@ -26,14 +17,17 @@ export default class TitleScene extends Phaser.Scene {
     this.add.tileSprite(0, this.height, this.width, bgh, 'background')
       .setOrigin(0, 1).setScrollFactor(0);
 
-    createAligned(this, -23, 'bgTree_1', true);
-    createAligned(this, 100, 'lights_1', false);
-    createAligned(this, -53, 'bgTree_2', true);
-    createAligned(this, -75, 'bgTree_3', true);
-    createAligned(this, 100, 'lights_2', false);
-    createAligned(this, -45, 'bgTree_4', true);
-    createAligned(this, 0, 'upTree', true);
-    createAligned(this, 10, 'floor', true, -250);
+    this.bg1 = createAligned(this, -23, 'bgTree_1', true);
+    this.bg2 = createAligned(this, 100, 'lights_1', false);
+    this.bg3 = createAligned(this, -53, 'bgTree_2', true);
+    this.bg4 = createAligned(this, -75, 'bgTree_3', true);
+    this.bg5 = createAligned(this, 100, 'lights_2', false);
+    this.bg6 = createAligned(this, -45, 'bgTree_4', true);
+    this.bg7 = createAligned(this, 0, 'upTree', true);
+    this.bg8 = createAligned(this, 10, 'floor', true, -250);
+
+    this.player = this.physics.add.sprite(200, this.height - 90, 'player_rest');
+    this.player.anims.play('rest')
 
     const title = this.make.text({
       x: this.width/2,
@@ -60,6 +54,15 @@ export default class TitleScene extends Phaser.Scene {
       .on('pointerup', () => {
         this.exitNotPressed();
       });
+  }
+
+  update() {
+    const bgs = [this.bg1, this.bg2, this.bg3, this.bg4, this.bg5, this.bg6, this.bg7, this.bg8];
+    const fact = [0.1, 0.15, 0.25, 0.4, 0.5, 0.6, 1, 1.5];
+
+    bgs.forEach((bg, index) => {
+      bg.tilePositionX += fact[index];
+    });
   }
 
   playIsPressed() {
