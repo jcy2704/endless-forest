@@ -2,6 +2,7 @@
 export default {
     drop: 1,
 
+    dropForce: 150,
     // platform speed range, in pixels per second
     platformSpeedRange: [300, 300],
 
@@ -35,10 +36,4 @@ export default {
 
     // consecutive jumps allowed
     jumps: 2,
-
-    // % of probability a coin appears on the platform
-    coinPercent: 25,
-
-    // % of probability a fire appears on the platform
-    firePercent: 25
 }

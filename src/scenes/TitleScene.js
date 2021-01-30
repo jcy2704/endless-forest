@@ -54,18 +54,16 @@ export default class TitleScene extends Phaser.Scene {
         this.exitNotPressed();
       });
 
-    // ['A', 'S', 'SPACE', 'ENTER'].forEach(key => {
-    //   const keyP = this.input.keyboard.addKey(key);
-    //   keyP.on('down', () => {
-    //     this.start();
-    //   });
-    // });
-
-    this.input.keyboard.on('keydown', this.start, this);
+    ['A', 'S', 'SPACE', 'ENTER'].forEach(key => {
+      const keyP = this.input.keyboard.addKey(key);
+      keyP.on('down', () => {
+        this.start();
+      });
+    });
   }
 
   start() {
-    this.cameras.main.fadeOut(1000, 0, 0, 0);
+    this.cameras.main.fadeOut(2000, 255, 255, 255);
     this.scene.start('game-start');
   }
 

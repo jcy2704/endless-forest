@@ -164,7 +164,7 @@ export default class PreLoad extends Phaser.Scene {
     key: "falling",
     frames: this.anims.generateFrameNumbers('player_falling', {
         start: 0,
-        end: 6
+        end: 5
     }),
     frameRate: 7
   });

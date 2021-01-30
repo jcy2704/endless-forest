@@ -15,10 +15,12 @@ export default class Game extends Phaser.Scene {
   }
 
   create() {
-    this.cameras.main.fadeIn(1000, 0, 0, 0);
+    this.cameras.main.fadeIn(1500, 255, 255, 255);
+
     this.alive = true;
     this.playerJumps = 0;
     this.playerDrops = 0;
+    this.platformAdded = 0;
 
     const bgh = this.textures.get('background').getSourceImage().height;
 
@@ -39,8 +41,8 @@ export default class Game extends Phaser.Scene {
     this.bg8.body.moves = false;
     this.bg8.body.setSize(this.width, 55);
 
-    this.player = this.physics.add.sprite(200, this.height - 95, 'player');
-    this.player.setGravityY(900);
+    this.player = this.physics.add.sprite(gameOptions.playerStartPosition, this.height - 95, 'player');
+    this.player.setGravityY(gameOptions.playerGravity);
 
     this.physics.add.collider(this.player, this.bg8, () => {
       if (!this.player.anims.isPlaying) {
@@ -62,25 +64,72 @@ export default class Game extends Phaser.Scene {
     keys.space.on('down', this.jump, this);
     keys.a.on('down', this.attack, this);
     keys.s.on('down', this.instaDrop, this);
+
+    this.platformGroup = this.add.group({
+      removeCallback: (platform) => {
+        platform.scene.platformPool.add(platform);
+      }
+    })
+
+    this.platformPool = this.add.group({
+      removeCallback: (platform) => {
+        platform.scene.platformGroup.add(platform);
+      }
+    })
+
+    this.physics.add.collider(this.player, this.platformGroup, () => {
+      if (!this.player.anims.isPlaying) {
+        this.player.setTexture('player');
+        this.player.anims.play("run", true);
+      }
+    });
+
+    this.platform = this.add.tileSprite(this.width, this.height-200, 1000, 50, 'platform');
+
+    this.physics.add.existing(this.platform);
+    this.platform.body.setVelocityX(-100);
+    this.platform.body.setSize(this.platform.body.width, this.platform.body.height - 10);
+    this.platform.body.setImmovable();
+
+    this.physics.add.collider(this.player, this.platform, () => {
+      this.player.setVelocityX(this.platform.body.velocity.x * -1);
+      if (!this.player.anims.isPlaying) {
+        this.player.setTexture('player');
+        this.player.anims.play("run", true);
+      }
+    }, null, this)
+
+    this.platformPosY = this.platform.body.y - this.platform.body.height + 10.5
+
+    this.physics.add.overlap(this.player, this.platform, () => {
+      this.player.y = this.platformPosY - 10.5;
+    })
+
   }
 
   update() {
-    if (this.player.body.velocity.y > 20 && this.alive && !this.player.anims.isPlaying) {
+    if(this.cursors.left.isDown) {
+      this.scene.pause();
+    }
+
+    this.player.x = gameOptions.playerStartPosition;
+
+    if (this.player.body.velocity.y > 0 && this.alive && !this.player.anims.isPlaying) {
+      // this.player.setVelocityX(0);
       this.player.anims.play('falling', true);
     }
 
-    if(this.player.y > 725){
-      this.scene.start("game-start");
-    }
-
-    if (this.alive) {
+    if (this.alive === true) {
       const bgs = [this.bg1, this.bg2, this.bg3, this.bg4, this.bg5, this.bg6, this.bg7, this.bg8]
       const fact = [1.4, 1.45, 1.6, 1.7, 1.8, 2, 3.5, 5]
 
       bgs.forEach((bg, index) => {
         bg.tilePositionX += fact[index];
       })
+    } else {
+      this.scene.start('game-start')
     }
+    this.player.setVelocityX(0);
   }
 
   jump() {
@@ -103,8 +152,12 @@ export default class Game extends Phaser.Scene {
     this.player.on('animationcomplete', () => {
       this.player.setTexture('player');
       this.player.setSize(this.player.width, this.player.height);
+
       if (this.player.y < 629 && this.player.y > 620) {
-        this.player.setPosition(200, this.height - 95);
+        this.player.y = 629;
+        this.player.play('run');
+      } else if (this.player.y < this.platformPosY && this.player.y > this.platformPosY - 10.5) {
+        this.player.y = this.platformPosY;
         this.player.play('run');
       }
     })
@@ -115,7 +168,7 @@ export default class Game extends Phaser.Scene {
       if (this.player.body.touching.down) {
         this.playerDrops = 0;
       }
-      this.player.setVelocityY(200);
+      this.player.setVelocityY(gameOptions.dropForce);
       this.playerDrops += 1;
     }
   }
