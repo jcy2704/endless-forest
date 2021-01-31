@@ -36,4 +36,6 @@ export default {
 
     // consecutive jumps allowed
     jumps: 2,
+
+    scoreSpeed: 500,
 }

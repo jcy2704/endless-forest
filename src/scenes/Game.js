@@ -17,15 +17,19 @@ export default class Game extends Phaser.Scene {
   create() {
     this.cameras.main.fadeIn(1500, 255, 255, 255);
 
+    this.input.mouse.disableContextMenu();
+
     this.alive = true;
     this.playerJumps = 0;
     this.playerDrops = 0;
     this.platformAdded = 0;
+    this.score = 0;
+    this.scoreSpeed = gameOptions.scoreSpeed;
 
     const bgh = this.textures.get('background').getSourceImage().height;
 
     this.add.tileSprite(0, this.height, this.width, bgh, 'background')
-      .setOrigin(0, 1).setScrollFactor(0);
+      .setOrigin(0, 1);
 
     this.bg1 = createAligned(this, -23, 'bgTree_1', true);
     this.bg2 = createAligned(this, 100, 'lights_1', false);
@@ -38,7 +42,6 @@ export default class Game extends Phaser.Scene {
 
     this.bg8 = this.physics.add.existing(this.bg8);
     this.bg8.body.setImmovable();
-    this.bg8.body.moves = false;
     this.bg8.body.setSize(this.width, 55);
 
     this.player = this.physics.add.sprite(gameOptions.playerStartPosition, this.height - 95, 'player');
@@ -65,6 +68,14 @@ export default class Game extends Phaser.Scene {
     keys.a.on('down', this.attack, this);
     keys.s.on('down', this.instaDrop, this);
 
+    this.input.on("pointerdown", (pointer) => {
+      if (pointer.rightButtonDown()) {
+        this.instaDrop();
+      } else if (pointer.leftButtonDown()) {
+        this.attack();
+      }
+    }, this);
+
     this.platformGroup = this.add.group({
       removeCallback: (platform) => {
         platform.scene.platformPool.add(platform);
@@ -84,10 +95,10 @@ export default class Game extends Phaser.Scene {
       }
     });
 
-    this.platform = this.add.tileSprite(this.width, this.height-200, 1000, 50, 'platform');
+    this.platform = this.add.tileSprite(this.width, this.height-200, 200, 50, 'platform');
 
     this.physics.add.existing(this.platform);
-    this.platform.body.setVelocityX(-100);
+    this.platform.body.setVelocityX(-200);
     this.platform.body.setSize(this.platform.body.width, this.platform.body.height - 10);
     this.platform.body.setImmovable();
 
@@ -105,17 +116,37 @@ export default class Game extends Phaser.Scene {
       this.player.y = this.platformPosY - 10.5;
     })
 
+    this.scoreText = this.make.text({
+      x: this.width-160,
+      y: 40,
+      text: 'SCORE: 0',
+      style: {
+        fontSize: '20px',
+        fill: '#ffffff',
+        fontFamily: 'Arcadia, monospace'
+      }
+    });
+
+    this.scoreCounter = this.time.addEvent({
+      delay: this.scoreSpeed,
+      callback: () => {
+        this.score += 1;
+      },
+      callbackScope: this,
+      loop: true
+    });
   }
 
   update() {
-    if(this.cursors.left.isDown) {
+    if (this.cursors.left.isDown) {
       this.scene.pause();
+    } else if (this.cursors.right.isDown) {
+      this.alive = false;
     }
 
     this.player.x = gameOptions.playerStartPosition;
 
     if (this.player.body.velocity.y > 0 && this.alive && !this.player.anims.isPlaying) {
-      // this.player.setVelocityX(0);
       this.player.anims.play('falling', true);
     }
 
@@ -129,7 +160,12 @@ export default class Game extends Phaser.Scene {
     } else {
       this.scene.start('game-start')
     }
+
     this.player.setVelocityX(0);
+
+    this.scoreText.setText(`SCORE: ${this.score}`);
+
+    this.scoreText.x = this.width - this.scoreText.width - 50;
   }
 
   jump() {
