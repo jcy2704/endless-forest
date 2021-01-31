@@ -12,6 +12,10 @@ export default class TitleScene extends Phaser.Scene {
 
   create() {
     this.cameras.main.fadeIn(1000, 0, 0, 0);
+    
+    this.menuSong = this.sound.add('menu', { volume: 0.25, loop: true });
+    this.menuSong.play();
+
     const bgh = this.textures.get('background').getSourceImage().height;
 
     this.add.tileSprite(0, this.height, this.width, bgh, 'background')
@@ -63,6 +67,7 @@ export default class TitleScene extends Phaser.Scene {
   }
 
   start() {
+    this.menuSong.stop();
     this.cameras.main.fadeOut(2000, 255, 255, 255);
     this.scene.start('game-start');
   }

@@ -19,6 +19,13 @@ import player_jump from '../assets/player/player_jump.png';
 import player_falling from '../assets/player/player_falling.png';
 import player_attack from '../assets/player/player_attack.png';
 import player_dead from '../assets/player/player_dead.png';
+import skeleton_attack from '../assets/monsters/skeleton/Skeleton Attack.png';
+import skeleton_walk from '../assets/monsters/skeleton/Skeleton Walk.png';
+import skeleton_dead from '../assets/monsters/skeleton/Skeleton Dead.png';
+import menu from '../assets/music/Dee Yan-Key - minor angst.mp3';
+import ending from '../assets/music/Dee Yan-Key - III. Finale_ Slowly.mp3';
+import spike from '../assets/obstacle/spike.png';
+
 
 export default class PreLoad extends Phaser.Scene {
   constructor() {
@@ -106,6 +113,24 @@ export default class PreLoad extends Phaser.Scene {
       frameHeight: 60
     });
 
+    this.load.spritesheet("skeleton_walk", skeleton_walk, {
+      frameWidth: 45.13,
+      frameHeight: 68
+    });
+
+    this.load.spritesheet("skeleton_attack", skeleton_attack, {
+      frameWidth: 91.6,
+      frameHeight: 79
+    });
+
+    this.load.spritesheet("skeleton_dead", skeleton_dead, {
+      frameWidth: 69.85,
+      frameHeight: 69
+    });
+
+    this.load.audio('menu', menu);
+    this.load.audio('ending', ending);
+
     this.load.on('progress', function (value) {
       progressBar.clear();
       percentText.setText(parseInt(value * 100) + '%');
@@ -178,6 +203,36 @@ export default class PreLoad extends Phaser.Scene {
     frameRate: 15
   });
 
-    this.scene.start('title-screen');
+  this.anims.create({
+    key: "skeleton_walking",
+    frames: this.anims.generateFrameNumbers('skeleton_walk', {
+        start: 0,
+        end: 12
+    }),
+    frameRate: 10,
+    repeat: -1
+  });
+
+  this.anims.create({
+    key: "skeleton_attacking",
+    frames: this.anims.generateFrameNumbers('skeleton_attack', {
+        start: 0,
+        end: 17
+    }),
+    frameRate: 10,
+    repeat: -1
+  });
+
+  this.anims.create({
+    key: "skeleton_death",
+    frames: this.anims.generateFrameNumbers('skeleton_dead', {
+        start: 0,
+        end: 14
+    }),
+    frameRate: 10,
+    repeat: -1
+  });
+
+  this.scene.start('title-screen');
   }
 }
