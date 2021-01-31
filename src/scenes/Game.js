@@ -17,6 +17,9 @@ export default class Game extends Phaser.Scene {
   create() {
     this.cameras.main.fadeIn(1500, 255, 255, 255);
 
+    this.gameMusic = this.sound.add('gameMusic', { volume: 0.25, loop: true });
+    this.gameMusic.play();
+
     this.input.mouse.disableContextMenu();
 
     this.alive = true;

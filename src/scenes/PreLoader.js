@@ -22,7 +22,8 @@ import player_dead from '../assets/player/player_dead.png';
 import skeleton_attack from '../assets/monsters/skeleton/Skeleton Attack.png';
 import skeleton_walk from '../assets/monsters/skeleton/Skeleton Walk.png';
 import skeleton_dead from '../assets/monsters/skeleton/Skeleton Dead.png';
-import menu from '../assets/music/Dee Yan-Key - minor angst.mp3';
+import menu from '../assets/music/VGMA Challenge - July 12th.wav';
+import gameMusic from '../assets/music/A mystical journey_3.ogg';
 import ending from '../assets/music/Dee Yan-Key - III. Finale_ Slowly.mp3';
 import spike from '../assets/obstacle/spike.png';
 
@@ -129,6 +130,7 @@ export default class PreLoad extends Phaser.Scene {
     });
 
     this.load.audio('menu', menu);
+    this.load.audio('gameMusic', gameMusic);
     this.load.audio('ending', ending);
 
     this.load.on('progress', function (value) {
