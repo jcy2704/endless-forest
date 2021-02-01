@@ -69,7 +69,7 @@ export default class TitleScene extends Phaser.Scene {
   start() {
     this.menuSong.stop();
     this.cameras.main.fadeOut(2000, 255, 255, 255);
-    this.scene.start('game-start');
+    this.scene.start('instructions');
   }
 
   update() {

@@ -4,6 +4,7 @@ import Game from './scenes/Game';
 import Boot from './scenes/Boot';
 import PreLoader from './scenes/PreLoader';
 import titleScene from './scenes/TitleScene';
+import instructions from './scenes/InstructionsScene';
 
 window.onload = () => {
   const config = {
@@ -20,7 +21,7 @@ window.onload = () => {
         debug: true
       }
     },
-    scene: [Boot, PreLoader, titleScene, Game]
+    scene: [Boot, PreLoader, titleScene, instructions, Game]
   };
 
   const game = new Phaser.Game(config);

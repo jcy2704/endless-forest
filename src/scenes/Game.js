@@ -64,10 +64,12 @@ export default class Game extends Phaser.Scene {
     const keys = this.input.keyboard.addKeys({
       space: 'SPACE',
       a: 'A',
-      s: 'S'
+      s: 'S',
+      w: 'W'
     });
 
     keys.space.on('down', this.jump, this);
+    keys.w.on('down', this.jump, this);
     keys.a.on('down', this.attack, this);
     keys.s.on('down', this.instaDrop, this);
 

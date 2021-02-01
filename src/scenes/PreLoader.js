@@ -26,7 +26,9 @@ import menu from '../assets/music/VGMA Challenge - July 12th.wav';
 import gameMusic from '../assets/music/A mystical journey_3.ogg';
 import ending from '../assets/music/Dee Yan-Key - III. Finale_ Slowly.mp3';
 import spike from '../assets/obstacle/spike.png';
-
+import spike_collection from '../assets/obstacle/spike collection.png';
+import instruction_bg from '../assets/paperbackground.png';
+import loadFont from '../javascript/fontLoader';
 
 export default class PreLoad extends Phaser.Scene {
   constructor() {
@@ -37,6 +39,7 @@ export default class PreLoad extends Phaser.Scene {
     this.width = this.scale.width;
     this.height = this.scale.height;
 
+    
     const progressBox = this.add.graphics();
     const progressBar = this.add.graphics();
     progressBox.fillStyle(0x222222, 0.8);
@@ -83,6 +86,8 @@ export default class PreLoad extends Phaser.Scene {
     this.load.image('exit', exitBtn);
     this.load.image('playPressed', playPressed);
     this.load.image('exitPressed', exitPressed);
+
+    this.load.image('instructions_bg', instruction_bg);
 
     this.load.spritesheet('player', player, {
       frameWidth: 63.5,

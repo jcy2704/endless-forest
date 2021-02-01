@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import loadFont from '../javascript/fontLoader';
+import boot from '../assets/sound effects/boot.mp3';
 
 export default class Boot extends Phaser.Scene {
   constructor() {
@@ -10,9 +11,13 @@ export default class Boot extends Phaser.Scene {
     this.width = this.scale.width;
     this.height = this.scale.height;
     loadFont('Arcadia', '../assets/font/Arcadia-Regular.ttf');
+    this.load.audio('boot', boot);
   }
 
   create() {
+    this.bootSound = this.sound.add('boot', { volume: 0.4 });
+    this.bootSound.play();
+
     const title = this.make.text({
       x: this.width/2,
       y: this.height/2,
@@ -23,7 +28,7 @@ export default class Boot extends Phaser.Scene {
         fontFamily: 'Arcadia, monospace'
       }
     });
-    title.setOrigin(0.5, 0.5)
+    title.setOrigin(0.5, 0.5);
 
     this.cameras.main.fadeIn(1000, 0, 0, 0);
 
