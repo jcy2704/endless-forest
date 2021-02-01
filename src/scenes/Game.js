@@ -21,6 +21,7 @@ export default class Game extends Phaser.Scene {
     this.gameMusic.play();
 
     this.input.mouse.disableContextMenu();
+
     // Variables
     this.alive = true;
     this.playerJumps = 0;
@@ -70,7 +71,7 @@ export default class Game extends Phaser.Scene {
     });
 
     // Player
-    this.player = this.physics.add.sprite(gameOptions.playerStartPosition, this.height - 95, 'player');
+    this.player = this.physics.add.sprite(gameOptions.playerPosition, this.height - 95, 'player');
     this.player.setGravityY(gameOptions.playerGravity);
 
     this.physics.add.collider(this.player, this.bg8, () => {
@@ -81,8 +82,8 @@ export default class Game extends Phaser.Scene {
     });
 
     this.physics.add.overlap(this.player, this.bg8, () => {
-      this.player.setPosition(200, this.height - 104)
-    })
+      this.player.setPosition(200, this.height - 104);
+    });
 
     // Inputs
     const keys = this.input.keyboard.addKeys({
@@ -110,51 +111,49 @@ export default class Game extends Phaser.Scene {
       removeCallback: (platform) => {
         platform.scene.platformPool.add(platform);
       }
-    })
+    });
 
     this.platformPool = this.add.group({
       removeCallback: (platform) => {
         platform.scene.platformGroup.add(platform);
       }
-    })
-
-    this.physics.add.collider(this.player, this.platformGroup, () => {
-      if (!this.player.anims.isPlaying) {
-        this.player.setTexture('player');
-        this.player.anims.play("run", true);
-      }
     });
 
-    this.platform = this.add.tileSprite(this.width, this.height-200, 200, 50, 'platform');
+    const randomPlatformWidth = Phaser.Math.Between(gameOptions.platformSizeRange[0], gameOptions.platformSizeRange[1]);
 
-    this.physics.add.existing(this.platform);
-    this.platform.body.setVelocityX(-300);
-    this.platform.body.setSize(this.platform.body.width, this.platform.body.height - 10);
-    this.platform.body.setImmovable();
+    const randomPlatformHeight = Phaser.Math.Between(gameOptions.platformHeightRange[0], gameOptions.platformHeightRange[1]);
 
-    this.physics.add.collider(this.player, this.platform, () => {
-      this.player.setVelocityX(this.platform.body.velocity.x * -1);
+    this.addPlatform(this.width, randomPlatformHeight, randomPlatformWidth);
+
+    this.physics.add.collider(this.player, this.platformGroup, () => {
+      this.player.setVelocityX(gameOptions.platformSpeed);
       if (!this.player.anims.isPlaying) {
         this.player.setTexture('player');
         this.player.anims.play("run", true);
       }
-    }, null, this)
-
-    this.platformPosY = this.platform.body.y - this.platform.body.height + 10.5
-
-    this.physics.add.overlap(this.player, this.platform, () => {
-      this.player.y = this.platformPosY - 10.5;
-    })
+    }, null, this);
   }
 
   update() {
+    if (this.platformGroup.getLength()) {
+      this.platformGroup.getChildren().forEach(platform => {
+        const platformPosY = platform.body.y - platform.body.height + 10.5;
+
+        this.physics.add.overlap(this.player, platform, () => {
+          this.player.y = platformPosY - 10.5;
+        });
+      });
+    }
+
     if (this.cursors.left.isDown) {
       this.scene.pause();
     } else if (this.cursors.right.isDown) {
       this.alive = false;
+    } else if (this.cursors.up.isDown) {
+      this.scene.resume();
     }
 
-    this.player.x = gameOptions.playerStartPosition;
+    this.player.x = gameOptions.playerPosition;
 
     if (this.player.body.velocity.y > 0 && this.alive && !this.player.anims.isPlaying) {
       this.player.anims.play('falling', true);
@@ -176,6 +175,32 @@ export default class Game extends Phaser.Scene {
     this.scoreText.setText(`SCORE: ${this._score}`);
 
     this.scoreText.x = this.width - this.scoreText.width - 50;
+
+    let minDistance = this.width;
+    this.platformGroup.getChildren().forEach(platform => {
+      const platformDistance = minDistance - platform.x - platform.displayWidth / 2;
+      if (platformDistance < minDistance){
+        minDistance = platformDistance;
+      }
+      if (platform.x < - platform.displayWidth / 2){
+        this.platformGroup.killAndHide(platform);
+        this.platformGroup.remove(platform);
+        this.platformAdded -= 1;
+      }
+    }, this);
+
+    if (minDistance > this.nextPlatformDistance && this.platformAdded <= 5) {
+      let nextPlatformWidth = Phaser.Math.Between(gameOptions.platformSizeRange[0], gameOptions.platformSizeRange[1]);
+
+      let platformRandomHeight;
+      if (this.platformAdded == 0) {
+        platformRandomHeight = Phaser.Math.Between(gameOptions.platformInitial[0], gameOptions.platformInitial[1]);
+      } else {
+        platformRandomHeight = Phaser.Math.Between(gameOptions.platformHeightRange[0], gameOptions.platformHeightRange[1]);
+      }
+
+      this.addPlatform(this.width + nextPlatformWidth / 2, platformRandomHeight, nextPlatformWidth);
+    }
   }
 
   jump() {
@@ -202,10 +227,16 @@ export default class Game extends Phaser.Scene {
       if (this.player.y < 629 && this.player.y > 620) {
         this.player.y = 629;
         this.player.play('run');
-      } else if (this.player.y < this.platformPosY && this.player.y > this.platformPosY - 10.5) {
-        this.player.y = this.platformPosY;
-        this.player.play('run');
       }
+
+      this.platformGroup.getChildren().forEach(platform => {
+        const platformPosY = platform.body.y - platform.body.height + 10.5
+
+        if (this.player.y < platformPosY && this.player.y > platformPosY - 10.5) {
+          this.player.y = platformPosY;
+          this.player.play('run');
+        }
+      });
     })
   }
 
@@ -218,4 +249,42 @@ export default class Game extends Phaser.Scene {
       this.playerDrops += 1;
     }
   }
+
+  addPlatform(posX, posY, platformWidth) {
+    this.platformAdded += 1;
+    let platform;
+    if (this.platformAdded <= 5) {
+      if(this.platformPool.getLength()){
+        platform = this.platformPool.getFirst();
+        platform.x = posX;
+        platform.y = posY;
+        platform.active = true;
+        platform.visible = true;
+        this.platformPool.remove(platform);
+        platform.displayWidth = platformWidth;
+        platform.tileScaleX = 1 / platform.scaleX;
+      }
+      else{
+        platform = this.add.tileSprite(posX, posY, platformWidth, 50, "platform");
+        this.physics.add.existing(platform);
+        platform.body.setImmovable(true);
+        platform.body.setVelocityX(gameOptions.platformSpeed * -1);
+        platform.body.setSize(platform.body.width, platform.body.height - 10);
+        this.platformGroup.add(platform);
+      }
+    }
+
+    this.nextPlatformDistance = Phaser.Math.Between(gameOptions.spawnRange[0], gameOptions.spawnRange[1]);
+  }
+
+  // spawnSkeleton(range, rate) {
+  //   this.time.addEvent({
+  //     delay: rate,
+  //     callback: () => {
+  //       this.physics.add
+  //     },
+  //     callbackScope: this,
+  //     loop: true
+  //   });
+  // }
 }

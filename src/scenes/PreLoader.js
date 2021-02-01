@@ -91,6 +91,8 @@ export default class PreLoad extends Phaser.Scene {
 
     this.load.image('instructions_bg', instruction_bg);
 
+    this.load.image('spike', spike_collection);
+
     this.load.spritesheet('player', player, {
       frameWidth: 63.5,
       frameHeight: 59
@@ -170,16 +172,16 @@ export default class PreLoad extends Phaser.Scene {
       key: "dead",
       frames: this.anims.generateFrameNumbers('player_dead', {
           start: 0,
-          end: 6
+          end: 4
       }),
       frameRate: 4
-  });
+    });
 
     this.anims.create({
       key: 'rest',
       frames: this.anims.generateFrameNumbers('player_rest', {
         start: 0,
-        end: 3
+        end: 2
       }),
       frameRate: 2,
       repeat: -1

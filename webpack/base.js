@@ -20,15 +20,25 @@ module.exports = {
         use: "raw-loader"
       },
       {
-        test: /\.(gif|png|jpe?g|svg|xml|mp3|wav|ogg)$/i,
-        use: "file-loader"
+        test: /\.(gif|png|jpe?g|svg|xml)$/i,
+        loader: "file-loader",
+        options: {
+          outputPath: 'images/'
+        }
+      },
+      {
+        test: /\.(mp3|wav|ogg)$/i,
+        loader: "file-loader",
+        options: {
+          outputPath: 'audio/'
+        }
       },
       {
         test: /\.css$/i,
         use: ['style-loader', 'css-loader'],
       },
       {
-        test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
+        test: /\.(woff(2)?|ttf|eot)(\?v=\d+\.\d+\.\d+)?$/,
         use: [
           {
             loader: 'file-loader',

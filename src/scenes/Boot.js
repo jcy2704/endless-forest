@@ -41,5 +41,10 @@ export default class Boot extends Phaser.Scene {
       this.scene.start('preLoader');
     });
 
+    const keyP = this.input.keyboard.addKey('ENTER');
+    keyP.on('down', () => {
+      this.bootSound.stop();
+      this.scene.start('preLoader');
+    });
   }
 }

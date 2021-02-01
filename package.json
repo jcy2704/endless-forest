@@ -1,7 +1,7 @@
 {
-  "name": "phaser3-project-template",
-  "version": "1.1.2",
-  "description": "A Phaser 3 Project Template",
+  "name": "endless-forrest",
+  "version": "1.0.0",
+  "description": "Endless Runner",
   "main": "src/index.js",
   "scripts": {
     "build": "webpack --config webpack/prod.js ",
@@ -9,29 +9,29 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/photonstorm/phaser3-project-template.git"
+    "url": "git+https://github.com/jcy2704/endless-runner"
   },
-  "author": "Richard Davey <rdavey@gmail.com> (http://www.photonstorm.com)",
+  "author": "Steven Jack Chung <stevenjchung12@gmail.com>",
   "license": "MIT",
   "licenseUrl": "http://www.opensource.org/licenses/mit-license.php",
   "bugs": {
-    "url": "https://github.com/photonstorm/phaser3-project-template/issues"
+    "url": "https://github.com/jcy2704/endless-runner/issues"
   },
-  "homepage": "https://github.com/photonstorm/phaser3-project-template#readme",
+  "homepage": "https://github.com/jcy2704/endless-runner#readme",
   "devDependencies": {
-    "@babel/core": "^7.7.2",
-    "@babel/preset-env": "^7.7.1",
-    "babel-loader": "^8.0.6",
+    "@babel/core": "^7.12.10",
+    "@babel/preset-env": "^7.12.11",
+    "babel-loader": "^8.2.2",
     "clean-webpack-plugin": "^3.0.0",
     "css-loader": "^5.0.1",
     "file-loader": "^4.3.0",
     "html-webpack-plugin": "^3.2.0",
     "raw-loader": "^3.1.0",
     "style-loader": "^2.0.0",
-    "terser-webpack-plugin": "^2.2.1",
-    "webpack": "^4.41.2",
-    "webpack-cli": "^3.3.10",
-    "webpack-dev-server": "^3.9.0",
+    "terser-webpack-plugin": "^2.3.8",
+    "webpack": "^4.46.0",
+    "webpack-cli": "^3.3.12",
+    "webpack-dev-server": "^3.11.2",
     "webpack-merge": "^4.2.2"
   },
   "dependencies": {
