@@ -12,7 +12,9 @@ export default class TitleScene extends Phaser.Scene {
 
   create() {
     this.cameras.main.fadeIn(1000, 0, 0, 0);
-    
+
+    this.scene.pauseOnBlur = false;
+
     this.menuSong = this.sound.add('menu', { volume: 0.25, loop: true });
     this.menuSong.play();
 

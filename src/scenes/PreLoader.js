@@ -38,8 +38,10 @@ export default class PreLoad extends Phaser.Scene {
   preload() {
     this.width = this.scale.width;
     this.height = this.scale.height;
+    this.sound.pauseOnBlur = false;
+    this.scene.pauseOnBlur = false;
+    loadFont('Monogram', '../assets/font/monogram_extended.ttf');
 
-    
     const progressBox = this.add.graphics();
     const progressBar = this.add.graphics();
     progressBox.fillStyle(0x222222, 0.8);

@@ -12,6 +12,7 @@ export default class Boot extends Phaser.Scene {
     this.height = this.scale.height;
     loadFont('Arcadia', '../assets/font/Arcadia-Regular.ttf');
     this.load.audio('boot', boot);
+    this.sound.pauseOnBlur = false;
   }
 
   create() {
