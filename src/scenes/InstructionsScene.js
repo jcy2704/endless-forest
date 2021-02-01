@@ -31,9 +31,9 @@ export default class Instructions extends Phaser.Scene {
     topIns.setOrigin(0.5, 0.5);
 
     const endless = this.make.text({
-      x: this.width - 310,
+      x: this.width - 335,
       y: 172,
-      text: 'Endless Forrest of',
+      text: 'Endless Forrest',
       style: {
         fontSize: '45px',
         fill: '#ff0000',
@@ -42,22 +42,10 @@ export default class Instructions extends Phaser.Scene {
     });
     endless.setOrigin(0.5, 0.5);
 
-    const dreams = this.make.text({
-      x: 211,
-      y: 213,
-      text: 'Dreams',
-      style: {
-        fontSize: '45px',
-        fill: '#ff0000',
-        fontFamily: 'Monogram, monospace',
-      }
-    });
-    dreams.setOrigin(0.5, 0.5);
-
     const nextLine1 = this.make.text({
       x: this.width/2,
-      y: 285,
-      text: "To try to escape you will need to kill the monsters and dodge the obsctacles.",
+      y: 255,
+      text: "To try to escape you will need to kill the monsters and dodge the obsctacles",
       style: {
         fontSize: '45px',
         fill: '#000000',
@@ -70,7 +58,7 @@ export default class Instructions extends Phaser.Scene {
 
     const title = this.make.text({
       x: this.width/2,
-      y: 345,
+      y: 315,
       text: 'Controls',
       style: {
         fontSize: '60px',
@@ -81,9 +69,9 @@ export default class Instructions extends Phaser.Scene {
     title.setOrigin(0.5, 0.5);
 
     const nextLine2 = this.make.text({
-      x: this.width/2 - 35,
-      y: 400,
-      text: "To jump over the obstacles use keys 'W' or 'SPACE'.",
+      x: this.width/2 - 45,
+      y: 370,
+      text: "To jump over the obstacles use keys 'W' or 'SPACE'",
       style: {
         fontSize: '45px',
         fill: '#000000',
@@ -96,8 +84,8 @@ export default class Instructions extends Phaser.Scene {
 
     const nextLine3 = this.make.text({
       x: this.width/2 - 45,
-      y: 475,
-      text: "To kill the monsters use the key 'A' or the 'LEFT CLICK' from the mouse button.",
+      y: 445,
+      text: "To kill the monsters use the key 'A' or the 'LEFT CLICK' from the mouse button",
       style: {
         fontSize: '45px',
         fill: '#000000',
@@ -110,8 +98,8 @@ export default class Instructions extends Phaser.Scene {
 
     const nextLine4 = this.make.text({
       x: this.width/2 - 10,
-      y: 565,
-      text: "To drop a little faster you can use the Insta Drop key 'S' or the 'RIGHT CLICK' from the mouse button.",
+      y: 545,
+      text: "To drop a little faster you can use the Insta Drop key 'S' or the 'RIGHT CLICK' from the mouse button",
       style: {
         fontSize: '45px',
         fill: '#000000',
@@ -124,7 +112,7 @@ export default class Instructions extends Phaser.Scene {
 
     const cont = this.make.text({
       x: this.width/2 - 10,
-      y: 650,
+      y: 640,
       text: "[ Press 'ENTER' to continue... ]",
       style: {
         fontSize: '45px',

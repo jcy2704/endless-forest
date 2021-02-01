@@ -21,14 +21,15 @@ export default class Game extends Phaser.Scene {
     this.gameMusic.play();
 
     this.input.mouse.disableContextMenu();
-
+    // Variables
     this.alive = true;
     this.playerJumps = 0;
     this.playerDrops = 0;
     this.platformAdded = 0;
-    this.score = 0;
+    this._score = 0;
     this.scoreSpeed = gameOptions.scoreSpeed;
 
+    // Background
     const bgh = this.textures.get('background').getSourceImage().height;
 
     this.add.tileSprite(0, this.height, this.width, bgh, 'background')
@@ -47,6 +48,28 @@ export default class Game extends Phaser.Scene {
     this.bg8.body.setImmovable();
     this.bg8.body.setSize(this.width, 55);
 
+    // Score System
+    this.scoreText = this.make.text({
+      x: this.width-160,
+      y: 40,
+      text: 'SCORE: 0',
+      style: {
+        fontSize: '20px',
+        fill: '#ffffff',
+        fontFamily: 'Arcadia, monospace'
+      }
+    });
+
+    this.scoreCounter = this.time.addEvent({
+      delay: this.scoreSpeed,
+      callback: () => {
+        this._score += 1;
+      },
+      callbackScope: this,
+      loop: true
+    });
+
+    // Player
     this.player = this.physics.add.sprite(gameOptions.playerStartPosition, this.height - 95, 'player');
     this.player.setGravityY(gameOptions.playerGravity);
 
@@ -61,6 +84,7 @@ export default class Game extends Phaser.Scene {
       this.player.setPosition(200, this.height - 104)
     })
 
+    // Inputs
     const keys = this.input.keyboard.addKeys({
       space: 'SPACE',
       a: 'A',
@@ -81,6 +105,7 @@ export default class Game extends Phaser.Scene {
       }
     }, this);
 
+    // Platforms
     this.platformGroup = this.add.group({
       removeCallback: (platform) => {
         platform.scene.platformPool.add(platform);
@@ -103,7 +128,7 @@ export default class Game extends Phaser.Scene {
     this.platform = this.add.tileSprite(this.width, this.height-200, 200, 50, 'platform');
 
     this.physics.add.existing(this.platform);
-    this.platform.body.setVelocityX(-200);
+    this.platform.body.setVelocityX(-300);
     this.platform.body.setSize(this.platform.body.width, this.platform.body.height - 10);
     this.platform.body.setImmovable();
 
@@ -120,26 +145,6 @@ export default class Game extends Phaser.Scene {
     this.physics.add.overlap(this.player, this.platform, () => {
       this.player.y = this.platformPosY - 10.5;
     })
-
-    this.scoreText = this.make.text({
-      x: this.width-160,
-      y: 40,
-      text: 'SCORE: 0',
-      style: {
-        fontSize: '20px',
-        fill: '#ffffff',
-        fontFamily: 'Arcadia, monospace'
-      }
-    });
-
-    this.scoreCounter = this.time.addEvent({
-      delay: this.scoreSpeed,
-      callback: () => {
-        this.score += 1;
-      },
-      callbackScope: this,
-      loop: true
-    });
   }
 
   update() {
@@ -168,7 +173,7 @@ export default class Game extends Phaser.Scene {
 
     this.player.setVelocityX(0);
 
-    this.scoreText.setText(`SCORE: ${this.score}`);
+    this.scoreText.setText(`SCORE: ${this._score}`);
 
     this.scoreText.x = this.width - this.scoreText.width - 50;
   }

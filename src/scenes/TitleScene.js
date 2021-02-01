@@ -38,7 +38,7 @@ export default class TitleScene extends Phaser.Scene {
     const title = this.make.text({
       x: this.width/2,
       y: this.height/2 - 140,
-      text: 'ENDLESS RUNNER',
+      text: 'ENDLESS FORREST',
       style: {
         fontSize: '90px',
         fill: '#ffffff',
