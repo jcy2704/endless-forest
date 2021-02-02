@@ -27,6 +27,7 @@ export default class Game extends Phaser.Scene {
     this.playerJumps = 0;
     this.playerDrops = 0;
     this.platformAdded = 0;
+    this.spikeAdded = 0;
     this._score = 0;
     this.scoreSpeed = gameOptions.scoreSpeed;
 
@@ -154,9 +155,38 @@ export default class Game extends Phaser.Scene {
       this.sound.play('death_sound', { volume: 0.25 });
       this.player.body.setVelocityY(-200);
     }, null, this);
+
+    this.spikeFloor = this.time.addEvent({
+      delay: gameOptions.spikeSpawnRate,
+      callback: () => {
+        this.spawnSpike();
+      },
+      callbackScope: this,
+      loop: true
+    })
+
+    this.floorSpikeGroup = this.add.group({
+      removeCallback: (floorSpike) => {
+        floorSpike.scene.floorSpikePool.add(floorSpike);
+      }
+    });
+
+    this.floorSpikePool = this.add.group({
+      removeCallback: (floorSpike) => {
+        floorSpike.scene.floorSpikeGroup.add(floorSpike);
+      }
+    });
+
+    this.floorSpikeCollider = this.physics.add.collider(this.player, this.floorSpikeGroup, () => {
+      this.alive = false;
+      this.player.anims.play('dead', true);
+      this.sound.play('death_sound', { volume: 0.25 });
+      this.player.body.setVelocityY(-200);
+    }, null, this);
   }
 
   update() {
+    console.log(this.floorSpikePool.getFirst())
     if (this.cursors.left.isDown) {
       this.scene.pause();
     } else if (this.cursors.right.isDown) {
@@ -206,6 +236,12 @@ export default class Game extends Phaser.Scene {
         }
       }, this);
 
+      this.floorSpikeGroup.getChildren().forEach(spike => {
+        if (spike.x < - spike.displayWidth / 2) {
+          spike.destroy();
+        }
+      }, this);
+
       let minDistance = this.width;
       this.platformGroup.getChildren().forEach(platform => {
         const platformDistance = minDistance - platform.x - platform.displayWidth / 2;
@@ -238,10 +274,15 @@ export default class Game extends Phaser.Scene {
       });
 
       this.spikeGroup.getChildren().forEach(spike => {
-        spike.setVelocityX(0)
+        spike.setVelocityX(0);
+      })
+
+      this.floorSpikeGroup.getChildren().forEach(spike => {
+        spike.body.setVelocityX(0);
       })
 
       this.physics.world.removeCollider(this.spikeCollider);
+      this.physics.world.removeCollider(this.floorSpikeCollider);
 
       this.input.keyboard.removeAllKeys(true);
       this.input.enabled = false;
@@ -309,10 +350,10 @@ export default class Game extends Phaser.Scene {
       this.platformPool.remove(platform);
       platform.displayWidth = platformWidth;
       platform.tileScaleX = 1 / platform.scaleX;
-    } else{
+    } else {
       platform = this.add.tileSprite(posX, posY, platformWidth, 50, "platform");
       this.physics.add.existing(platform);
-      platform.body.setImmovable(true);
+      platform.body.setImmovable();
       platform.body.setVelocityX(gameOptions.platformSpeed * -1);
       platform.body.setSize(platform.body.width, platform.body.height - 10);
       this.platformGroup.add(platform);
@@ -323,14 +364,14 @@ export default class Game extends Phaser.Scene {
     if (this.platformAdded > 1) {
       if (Phaser.Math.Between(1, 100) <= gameOptions.spikePercent) {
         if (this.spikePool.getLength()) {
-          let spike = this.spikePool.getFirst();
-          spike.x = posX - platform.body.width/2 + Phaser.Math.Between(1, platform.body.width - 56);
+          const spike = this.spikePool.getFirst();
+          spike.x = posX - platform.body.width/2 + Phaser.Math.Between(1, platform.body.width - gameOptions.spikeWidth);
           spike.y = posY - platform.body.height/2;
           spike.active = true;
           spike.visible = true;
           this.spikePool.remove(spike);
         } else {
-          let spike = this.physics.add.sprite(posX - platform.body.width/2 + Phaser.Math.Between(1, platform.body.width - 56), posY - platform.body.height/2, 'spike').setOrigin(0, 1);
+          const spike = this.physics.add.sprite(posX - platform.body.width/2 + Phaser.Math.Between(1, platform.body.width - gameOptions.spikeWidth), posY - platform.body.height/2, 'spike').setOrigin(0, 1);
           spike.setImmovable();
           spike.setVelocityX(platform.body.velocity.x);
           this.spikeGroup.add(spike);
@@ -339,14 +380,15 @@ export default class Game extends Phaser.Scene {
     }
   }
 
-  // spawnSkeleton(range, rate) {
-  //   this.time.addEvent({
-  //     delay: rate,
-  //     callback: () => {
-  //       this.physics.add
-  //     },
-  //     callbackScope: this,
-  //     loop: true
-  //   });
-  // }
+  spawnSpike() {
+    this.spikeAdded += 1;
+    const h = this.textures.get('spike').getSourceImage().height;
+
+    const floorSpike = this.add.tileSprite(this.width, gameOptions.playerPositionY, gameOptions.spikeWidth * Phaser.Math.Between(gameOptions.spikeScaleRange[0], gameOptions.spikeScaleRange[1]), h, 'spike');
+
+    this.physics.add.existing(floorSpike);
+    floorSpike.body.setImmovable();
+    floorSpike.body.setVelocityX(gameOptions.platformSpeed * -1);
+    this.floorSpikeGroup.add(floorSpike);
+  }
 }
