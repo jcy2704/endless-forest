@@ -30,7 +30,9 @@ export default {
     jumpForce: 500,
 
     // player starting X position
-    playerPosition: 200,
+    playerPositionX: 200,
+
+    playerPositionY: 629,
 
     // consecutive jumps allowed
     jumps: 2,

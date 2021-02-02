@@ -71,10 +71,11 @@ export default class Game extends Phaser.Scene {
     });
 
     // Player
-    this.player = this.physics.add.sprite(gameOptions.playerPosition, this.height - 95, 'player');
+    this.player = this.physics.add.sprite(gameOptions.playerPositionX, gameOptions.playerPositionY, 'player');
     this.player.setGravityY(gameOptions.playerGravity);
 
     this.physics.add.collider(this.player, this.bg8, () => {
+      this.platformTouching = false;
       if (!this.player.anims.isPlaying && this.alive) {
         this.player.setTexture('player');
         this.player.anims.play("run", true);
@@ -121,13 +122,14 @@ export default class Game extends Phaser.Scene {
 
     const randomPlatformWidth = Phaser.Math.Between(gameOptions.platformSizeRange[0], gameOptions.platformSizeRange[1]);
 
-    const randomPlatformHeight = Phaser.Math.Between(gameOptions.platformHeightRange[0], gameOptions.platformHeightRange[1]);
+    const randomPlatformHeight = Phaser.Math.Between(gameOptions.platformInitial[0], gameOptions.platformInitial[1]);
 
     this.addPlatform(this.width, randomPlatformHeight, randomPlatformWidth);
 
-    this.platfromCollider = this.physics.add.collider(this.player, this.platformGroup, () => {
+    this.physics.add.collider(this.player, this.platformGroup, () => {
+      this.platformTouching = true;
       this.player.setVelocityX(gameOptions.platformSpeed);
-      if (!this.player.anims.isPlaying) {
+      if (!this.player.anims.isPlaying && this.alive) {
         this.player.setTexture('player');
         this.player.anims.play("run", true);
       }
@@ -136,22 +138,21 @@ export default class Game extends Phaser.Scene {
     // Spikes
     this.spikeGroup = this.add.group({
       removeCallback: (spike) => {
-        spike.scene.platformPool.add(spike);
+        spike.scene.spikePool.add(spike);
       }
     });
 
-    this.spike = this.add.group({
+    this.spikePool = this.add.group({
       removeCallback: (spike) => {
-        spike.scene.platformGroup.add(spike);
+        spike.scene.spikeGroup.add(spike);
       }
     });
 
-    this.physics.add.collider(this.player, this.spikeGroup, () => {
+    this.spikeCollider = this.physics.add.collider(this.player, this.spikeGroup, () => {
       this.alive = false;
       this.player.anims.play('dead', true);
       this.sound.play('death_sound', { volume: 0.25 });
       this.player.body.setVelocityY(-200);
-      this.physics.world.removeCollider(this.platfromCollider);
     }, null, this);
   }
 
@@ -164,10 +165,16 @@ export default class Game extends Phaser.Scene {
       this.scene.resume();
     }
 
-    this.player.x = gameOptions.playerPosition;
+    this.player.x = gameOptions.playerPositionX;
     this.player.setVelocityX(0);
 
     if (this.alive) {
+      if (this.player.body.touching.down && this.platformTouching) {
+        this.scoreCounter.delay = gameOptions.scoreSpeed - 200;
+      } else {
+        this.scoreCounter.delay = gameOptions.scoreSpeed;
+      }
+
       if (this.platformGroup.getLength()) {
         this.platformGroup.getChildren().forEach(platform => {
           const platformPosY = platform.body.y - platform.body.height + 10.5;
@@ -192,6 +199,13 @@ export default class Game extends Phaser.Scene {
 
       this.scoreText.x = this.width - this.scoreText.width - 50;
 
+      this.spikeGroup.getChildren().forEach(spike => {
+        if (spike.x < - spike.displayWidth / 2) {
+          this.spikeGroup.killAndHide(spike);
+          this.spikeGroup.remove(spike);
+        }
+      }, this);
+
       let minDistance = this.width;
       this.platformGroup.getChildren().forEach(platform => {
         const platformDistance = minDistance - platform.x - platform.displayWidth / 2;
@@ -201,11 +215,10 @@ export default class Game extends Phaser.Scene {
         if (platform.x < - platform.displayWidth / 2){
           this.platformGroup.killAndHide(platform);
           this.platformGroup.remove(platform);
-          this.platformAdded -= 1;
         }
       }, this);
 
-      if (minDistance > this.nextPlatformDistance && this.platformAdded <= 5) {
+      if (minDistance > this.nextPlatformDistance) {
         let nextPlatformWidth = Phaser.Math.Between(gameOptions.platformSizeRange[0], gameOptions.platformSizeRange[1]);
 
         let platformRandomHeight;
@@ -218,10 +231,20 @@ export default class Game extends Phaser.Scene {
         this.addPlatform(this.width + nextPlatformWidth / 2, platformRandomHeight, nextPlatformWidth);
       }
     } else {
+      this.scoreCounter.paused = true;
+
       this.platformGroup.getChildren().forEach(platform => {
         platform.body.setVelocityX(0);
       });
-      this.scoreCounter.paused = true;
+
+      this.spikeGroup.getChildren().forEach(spike => {
+        spike.setVelocityX(0)
+      })
+
+      this.physics.world.removeCollider(this.spikeCollider);
+
+      this.input.keyboard.removeAllKeys(true);
+      this.input.enabled = false;
 
       // Delayed call to game over scene with score as arg
     }
@@ -248,8 +271,8 @@ export default class Game extends Phaser.Scene {
       this.player.setTexture('player');
       this.player.setSize(this.player.width, this.player.height);
 
-      if (this.player.y < 629 && this.player.y > 620) {
-        this.player.y = 629;
+      if (this.player.y < gameOptions.playerPositionY && this.player.y > 620) {
+        this.player.y = gameOptions.playerPositionY;
         this.player.play('run');
       }
 
@@ -277,28 +300,43 @@ export default class Game extends Phaser.Scene {
   addPlatform(posX, posY, platformWidth) {
     this.platformAdded += 1;
     let platform;
-    if (this.platformAdded <= 5) {
-      if(this.platformPool.getLength()){
-        platform = this.platformPool.getFirst();
-        platform.x = posX;
-        platform.y = posY;
-        platform.active = true;
-        platform.visible = true;
-        this.platformPool.remove(platform);
-        platform.displayWidth = platformWidth;
-        platform.tileScaleX = 1 / platform.scaleX;
-      }
-      else{
-        platform = this.add.tileSprite(posX, posY, platformWidth, 50, "platform");
-        this.physics.add.existing(platform);
-        platform.body.setImmovable(true);
-        platform.body.setVelocityX(gameOptions.platformSpeed * -1);
-        platform.body.setSize(platform.body.width, platform.body.height - 10);
-        this.platformGroup.add(platform);
-      }
+    if (this.platformPool.getLength()) {
+      platform = this.platformPool.getFirst();
+      platform.x = posX;
+      platform.y = posY;
+      platform.active = true;
+      platform.visible = true;
+      this.platformPool.remove(platform);
+      platform.displayWidth = platformWidth;
+      platform.tileScaleX = 1 / platform.scaleX;
+    } else{
+      platform = this.add.tileSprite(posX, posY, platformWidth, 50, "platform");
+      this.physics.add.existing(platform);
+      platform.body.setImmovable(true);
+      platform.body.setVelocityX(gameOptions.platformSpeed * -1);
+      platform.body.setSize(platform.body.width, platform.body.height - 10);
+      this.platformGroup.add(platform);
     }
 
     this.nextPlatformDistance = Phaser.Math.Between(gameOptions.spawnRange[0], gameOptions.spawnRange[1]);
+
+    if (this.platformAdded > 1) {
+      if (Phaser.Math.Between(1, 100) <= gameOptions.spikePercent) {
+        if (this.spikePool.getLength()) {
+          let spike = this.spikePool.getFirst();
+          spike.x = posX - platform.body.width/2 + Phaser.Math.Between(1, platform.body.width - 56);
+          spike.y = posY - platform.body.height/2;
+          spike.active = true;
+          spike.visible = true;
+          this.spikePool.remove(spike);
+        } else {
+          let spike = this.physics.add.sprite(posX - platform.body.width/2 + Phaser.Math.Between(1, platform.body.width - 56), posY - platform.body.height/2, 'spike').setOrigin(0, 1);
+          spike.setImmovable();
+          spike.setVelocityX(platform.body.velocity.x);
+          this.spikeGroup.add(spike);
+        }
+      }
+    }
   }
 
   // spawnSkeleton(range, rate) {
