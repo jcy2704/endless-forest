@@ -124,10 +124,12 @@ export default class Instructions extends Phaser.Scene {
     });
     cont.setOrigin(0.5, 0.5);
 
-    const keyP = this.input.keyboard.addKey('ENTER');
-    keyP.on('down', () => {
-      this.cameras.main.fadeOut(2000, 255, 255, 255);
-      this.scene.start('game-start');
+    ['A', 'S', 'SPACE', 'ENTER'].forEach(key => {
+      const keyP = this.input.keyboard.addKey(key);
+      keyP.on('down', () => {
+        this.cameras.main.fadeOut(2000, 255, 255, 255);
+        this.scene.start('game-start');
+      });
     });
   }
 }

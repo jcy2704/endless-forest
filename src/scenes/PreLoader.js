@@ -25,10 +25,10 @@ import skeleton_dead from '../assets/monsters/skeleton/Skeleton Dead.png';
 import menu from '../assets/music/VGMA Challenge - July 12th.wav';
 import gameMusic from '../assets/music/A mystical journey_3.ogg';
 import ending from '../assets/music/Dee Yan-Key - III. Finale_ Slowly.mp3';
-import spike from '../assets/obstacle/spike.png';
 import spike_collection from '../assets/obstacle/spike collection.png';
 import instruction_bg from '../assets/paperbackground.png';
 import loadFont from '../javascript/fontLoader';
+import death_sound from '../assets/sound effects/death_4_alex.wav';
 
 export default class PreLoad extends Phaser.Scene {
   constructor() {
@@ -141,6 +141,7 @@ export default class PreLoad extends Phaser.Scene {
     this.load.audio('menu', menu);
     this.load.audio('gameMusic', gameMusic);
     this.load.audio('ending', ending);
+    this.load.audio('death_sound', death_sound);
 
     this.load.on('progress', function (value) {
       progressBar.clear();

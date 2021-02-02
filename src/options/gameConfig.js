@@ -13,7 +13,7 @@ export default {
     // before next platform spawns, in pixels
     spawnRange: [80, 300],
 
-    platformSpawnRate: 6500,
+    platformSpawnRate: 5000,
 
     // platform width range, in pixels
     platformSizeRange: [150, 300],
@@ -46,4 +46,6 @@ export default {
     spikeWidth: 56,
 
     spikeScaleRange: [1, 4],
+
+    spikePercent: 25,
 }
