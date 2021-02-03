@@ -1,8 +1,4 @@
 import Phaser from 'phaser';
-import playRed from '../assets/buttons/red/play.png';
-import exitRed from '../assets/buttons/red/exit.png';
-import playPressed from '../assets/buttons/pressed/play.png';
-import exitPressed from '../assets/buttons/pressed/exit.png';
 
 export default class playAgain extends Phaser.Scene {
   constructor() {
@@ -16,11 +12,6 @@ export default class playAgain extends Phaser.Scene {
   preload() {
     this.width = this.scale.width;
     this.height = this.scale.height;
-
-    this.load.image('play_red', playRed);
-    this.load.image('exit_red', exitRed);
-    this.load.image('playPressed', playPressed);
-    this.load.image('exitPressed', exitPressed);
   }
 
   create() {
