@@ -24,6 +24,7 @@ export default class Game extends Phaser.Scene {
 
     // Variables
     this.alive = true;
+    this.skeletonAlive = true;
     this.playerJumps = 0;
     this.playerDrops = 0;
     this.platformAdded = 0;
@@ -189,7 +190,7 @@ export default class Game extends Phaser.Scene {
     this.skeletonGroup = this.add.group();
 
     this.skeletonCollider = this.physics.add.collider(this.player, this.skeletonGroup, () => {
-      if (this.alive && this.skeletonAlive && (this.player.anims.getName() === 'run' || this.player.anims.getName() === 'falling')) {
+      if (this.alive && this.skeletonAlive && this.player.anims.getName() != 'attack') {
         this.alive = false;
         this.player.setTexture('player_dead');
         this.player.anims.play('dead', true);
@@ -216,7 +217,20 @@ export default class Game extends Phaser.Scene {
 
       this.platformOverlap();
 
-      this.skeletonOverlap();
+      if (this.skeletonGroup.getLength()) {
+        this.skeletonGroup.getChildren().forEach(skeleton => {
+          this.skeletonOverlap = this.physics.add.overlap(this.player, skeleton, () => {
+            if (this.player.anims.getName() === 'attack') {
+              this.skeletonAlive = false;
+              skeleton.anims.playReverse('skeleton_death');
+            }
+          })
+
+          if (skeleton.anims.getName() === 'skeleton_death') {
+            this.physics.world.removeCollider(this.skeletonOverlap);
+          }
+        });
+      }
 
       this.backgroundParallax();
 
@@ -232,16 +246,16 @@ export default class Game extends Phaser.Scene {
     }
   }
 
-  backgroundParallax() {
-    if (this.player.body.velocity.y > 0 && !this.player.anims.isPlaying) {
-      this.player.anims.play('falling', true);
-    }
-    const bgs = [this.bg1, this.bg2, this.bg3, this.bg4, this.bg5, this.bg6, this.bg7, this.bg8]
-    const fact = [1.4, 1.45, 1.6, 1.7, 1.8, 2, 3.5, 5]
+  jump() {
+    if ((this.alive) && (this.player.body.touching.down || (this.playerJumps > 0 && this.playerJumps < gameOptions.jumps))) {
+      if (this.player.body.touching.down) {
+        this.playerJumps = 0;
+      }
 
-    bgs.forEach((bg, index) => {
-      bg.tilePositionX += fact[index];
-    })
+      this.player.setVelocityY(gameOptions.jumpForce * -1);
+      this.player.anims.play('jump', true);
+      this.playerJumps += 1;
+    }
   }
 
   attack() {
@@ -269,18 +283,6 @@ export default class Game extends Phaser.Scene {
     })
   }
 
-  jump() {
-    if ((this.alive) && (this.player.body.touching.down || (this.playerJumps > 0 && this.playerJumps < gameOptions.jumps))) {
-      if (this.player.body.touching.down) {
-        this.playerJumps = 0;
-      }
-
-      this.player.setVelocityY(gameOptions.jumpForce * -1);
-      this.player.anims.play('jump', true);
-      this.playerJumps += 1;
-    }
-  }
-
   instaDrop() {
     if ((this.alive) && (!this.player.body.touching.down || (this.playerDrops > 0 && this.playerJumps < gameOptions.drops))) {
       if (this.player.body.touching.down) {
@@ -288,14 +290,6 @@ export default class Game extends Phaser.Scene {
       }
       this.player.setVelocityY(gameOptions.dropForce);
       this.playerDrops += 1;
-    }
-  }
-
-  scoreBonus() {
-    if (this.player.body.touching.down && this.platformTouching) {
-      this.scoreCounter.delay = gameOptions.scoreSpeed - 200;
-    } else {
-      this.scoreCounter.delay = gameOptions.scoreSpeed;
     }
   }
 
@@ -368,18 +362,6 @@ export default class Game extends Phaser.Scene {
     }
   }
 
-  platformOverlap() {
-    if (this.platformGroup.getLength()) {
-      this.platformGroup.getChildren().forEach(platform => {
-        const platformPosY = platform.body.y - platform.body.height + 10.5;
-
-        this.physics.add.overlap(this.player, platform, () => {
-          this.player.y = platformPosY - 10.5;
-        });
-      });
-    }
-  }
-
   spawnSpike() {
     this.spikeAdded += 1;
     const h = this.textures.get('spike').getSourceImage().height;
@@ -397,28 +379,43 @@ export default class Game extends Phaser.Scene {
 
     const skeleton = this.physics.add.sprite(this.width, gameOptions.playerPositionY - 5, 'skeleton_walk');
 
-    skeleton.setVelocityX(gameOptions.platformSpeed * -1);
+    skeleton.setVelocityX(gameOptions.platformSpeed * -1 - 50);
     skeleton.anims.playReverse('skeleton_walking');
     skeleton.setImmovable();
 
     this.skeletonGroup.add(skeleton);
   }
 
-  skeletonOverlap() {
-    if (this.skeletonGroup.getLength()) {
-      this.skeletonGroup.getChildren().forEach(skeleton => {
-        this.skeletonOverlap = this.physics.add.overlap(this.player, skeleton, () => {
-          if (this.player.anims.getName() === 'attack') {
-            this.skeletonAlive = false;
-            skeleton.anims.playReverse('skeleton_death');
-          }
-        })
+  scoreBonus() {
+    if (this.player.body.touching.down && this.platformTouching) {
+      this.scoreCounter.delay = gameOptions.scoreSpeed - 200;
+    } else {
+      this.scoreCounter.delay = gameOptions.scoreSpeed;
+    }
+  }
 
-        if (skeleton.anims.getName() === 'skeleton_death') {
-          this.physics.world.removeCollider(this.skeletonOverlap);
-        }
+  platformOverlap() {
+    if (this.platformGroup.getLength()) {
+      this.platformGroup.getChildren().forEach(platform => {
+        const platformPosY = platform.body.y - platform.body.height + 10.5;
+
+        this.physics.add.overlap(this.player, platform, () => {
+          this.player.y = platformPosY - 10.5;
+        });
       });
     }
+  }
+
+  backgroundParallax() {
+    if (this.player.body.velocity.y > 0 && !this.player.anims.isPlaying) {
+      this.player.anims.play('falling', true);
+    }
+    const bgs = [this.bg1, this.bg2, this.bg3, this.bg4, this.bg5, this.bg6, this.bg7, this.bg8]
+    const fact = [1.45, 1.5, 1.65, 1.75, 1.85, 2.1, 3.55, 5.1]
+
+    bgs.forEach((bg, index) => {
+      bg.tilePositionX += fact[index];
+    })
   }
 
   objectRemove() {
@@ -437,7 +434,13 @@ export default class Game extends Phaser.Scene {
     }, this);
 
     this.skeletonGroup.getChildren().forEach(skeleton => {
-      if (skeleton.x < - skeleton.displayWidth / 2) {
+
+
+      if (skeleton.x < - skeleton.displayWidth / 2 && skeleton.anims.getName() === 'skeleton_death') {
+        this.kills += 1;
+        this.skeletonGroup.remove(skeleton);
+        skeleton.destroy();
+      } else if (skeleton.x < - skeleton.displayWidth / 2) {
         this.skeletonGroup.remove(skeleton);
         skeleton.destroy();
       }
@@ -445,30 +448,40 @@ export default class Game extends Phaser.Scene {
   }
 
   theAfterLife() {
-    let minDistance = this.width;
+    this.gameMusic.stop();
+
+    this.scoreCounter.paused = true;
+    this.skeletonSpawner.paused = true;
+    this.spikeFloor.paused = true;
+
     this.platformGroup.getChildren().forEach(platform => {
-      const platformDistance = minDistance - platform.x - platform.displayWidth / 2;
-      if (platformDistance < minDistance){
-        minDistance = platformDistance;
-      }
-      if (platform.x < - platform.displayWidth / 2){
-        this.platformGroup.killAndHide(platform);
-        this.platformGroup.remove(platform);
-      }
-    }, this);
+      platform.body.setVelocityX(0);
+    });
 
-    if (minDistance > this.nextPlatformDistance) {
-      let nextPlatformWidth = Phaser.Math.Between(gameOptions.platformSizeRange[0], gameOptions.platformSizeRange[1]);
+    this.spikeGroup.getChildren().forEach(spike => {
+      spike.setVelocityX(0);
+    })
 
-      let platformRandomHeight;
-      if (this.platformAdded == 0) {
-        platformRandomHeight = Phaser.Math.Between(gameOptions.platformInitial[0], gameOptions.platformInitial[1]);
-      } else {
-        platformRandomHeight = Phaser.Math.Between(gameOptions.platformHeightRange[0], gameOptions.platformHeightRange[1]);
-      }
+    this.floorSpikeGroup.getChildren().forEach(spike => {
+      spike.body.setVelocityX(0);
+    })
 
-      this.addPlatform(this.width + nextPlatformWidth / 2, platformRandomHeight, nextPlatformWidth);
-    }
+    this.skeletonGroup.getChildren().forEach(skeleton => {
+      skeleton.body.setVelocityX(-50);
+    })
+
+    this.physics.world.removeCollider(this.spikeCollider);
+    this.physics.world.removeCollider(this.floorSpikeCollider);
+    this.physics.world.removeCollider(this.skeletonCollider);
+    this.physics.world.removeCollider(this.skeletonOverlap);
+
+    this.input.keyboard.removeAllKeys(true);
+    this.input.enabled = false;
+
+    this.time.delayedCall(1000, () => {
+      this.player.setTexture('player_dead', 4);
+    })
+
     // Delayed call to game over scene with score as arg
   }
 }
