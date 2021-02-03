@@ -28,6 +28,7 @@ export default class Game extends Phaser.Scene {
     this.playerDrops = 0;
     this.platformAdded = 0;
     this.spikeAdded = 0;
+    this.kills = 0;
     this._score = 0;
     this.scoreSpeed = gameOptions.scoreSpeed;
 
@@ -151,6 +152,7 @@ export default class Game extends Phaser.Scene {
 
     this.spikeCollider = this.physics.add.collider(this.player, this.spikeGroup, () => {
       this.alive = false;
+      this.player.setTexture('player_dead');
       this.player.anims.play('dead', true);
       this.sound.play('death_sound', { volume: 0.25 });
       this.player.body.setVelocityY(-200);
@@ -165,28 +167,39 @@ export default class Game extends Phaser.Scene {
       loop: true
     })
 
-    this.floorSpikeGroup = this.add.group({
-      removeCallback: (floorSpike) => {
-        floorSpike.scene.floorSpikePool.add(floorSpike);
-      }
-    });
-
-    this.floorSpikePool = this.add.group({
-      removeCallback: (floorSpike) => {
-        floorSpike.scene.floorSpikeGroup.add(floorSpike);
-      }
-    });
+    this.floorSpikeGroup = this.add.group();
 
     this.floorSpikeCollider = this.physics.add.collider(this.player, this.floorSpikeGroup, () => {
       this.alive = false;
+      this.player.setTexture('player_dead');
       this.player.anims.play('dead', true);
       this.sound.play('death_sound', { volume: 0.25 });
       this.player.body.setVelocityY(-200);
     }, null, this);
+
+    this.skeletonSpawner = this.time.addEvent({
+      delay: gameOptions.skeletonSpawnRate,
+      callback: () => {
+        this.spawnSkeleton();
+      },
+      callbackScope: this,
+      loop: true
+    })
+
+    this.skeletonGroup = this.add.group();
+
+    this.skeletonCollider = this.physics.add.collider(this.player, this.skeletonGroup, () => {
+      if (this.alive && this.skeletonAlive && (this.player.anims.getName() === 'run' || this.player.anims.getName() === 'falling')) {
+        this.alive = false;
+        this.player.setTexture('player_dead');
+        this.player.anims.play('dead', true);
+        this.sound.play('death_sound', { volume: 0.25 });
+        this.player.body.setVelocityY(-200);
+      }
+    }, null, this)
   }
 
   update() {
-    console.log(this.floorSpikePool.getFirst())
     if (this.cursors.left.isDown) {
       this.scene.pause();
     } else if (this.cursors.right.isDown) {
@@ -199,96 +212,61 @@ export default class Game extends Phaser.Scene {
     this.player.setVelocityX(0);
 
     if (this.alive) {
-      if (this.player.body.touching.down && this.platformTouching) {
-        this.scoreCounter.delay = gameOptions.scoreSpeed - 200;
-      } else {
-        this.scoreCounter.delay = gameOptions.scoreSpeed;
-      }
+      this.scoreBonus();
 
-      if (this.platformGroup.getLength()) {
-        this.platformGroup.getChildren().forEach(platform => {
-          const platformPosY = platform.body.y - platform.body.height + 10.5;
+      this.platformOverlap();
 
-          this.physics.add.overlap(this.player, platform, () => {
-            this.player.y = platformPosY - 10.5;
-          });
-        });
-      }
+      this.skeletonOverlap();
 
-      if (this.player.body.velocity.y > 0 && !this.player.anims.isPlaying) {
-        this.player.anims.play('falling', true);
-      }
-      const bgs = [this.bg1, this.bg2, this.bg3, this.bg4, this.bg5, this.bg6, this.bg7, this.bg8]
-      const fact = [1.4, 1.45, 1.6, 1.7, 1.8, 2, 3.5, 5]
-
-      bgs.forEach((bg, index) => {
-        bg.tilePositionX += fact[index];
-      })
+      this.backgroundParallax();
 
       this.scoreText.setText(`SCORE: ${this._score}`);
 
       this.scoreText.x = this.width - this.scoreText.width - 50;
 
-      this.spikeGroup.getChildren().forEach(spike => {
-        if (spike.x < - spike.displayWidth / 2) {
-          this.spikeGroup.killAndHide(spike);
-          this.spikeGroup.remove(spike);
-        }
-      }, this);
+      this.objectRemove();
 
-      this.floorSpikeGroup.getChildren().forEach(spike => {
-        if (spike.x < - spike.displayWidth / 2) {
-          spike.destroy();
-        }
-      }, this);
-
-      let minDistance = this.width;
-      this.platformGroup.getChildren().forEach(platform => {
-        const platformDistance = minDistance - platform.x - platform.displayWidth / 2;
-        if (platformDistance < minDistance){
-          minDistance = platformDistance;
-        }
-        if (platform.x < - platform.displayWidth / 2){
-          this.platformGroup.killAndHide(platform);
-          this.platformGroup.remove(platform);
-        }
-      }, this);
-
-      if (minDistance > this.nextPlatformDistance) {
-        let nextPlatformWidth = Phaser.Math.Between(gameOptions.platformSizeRange[0], gameOptions.platformSizeRange[1]);
-
-        let platformRandomHeight;
-        if (this.platformAdded == 0) {
-          platformRandomHeight = Phaser.Math.Between(gameOptions.platformInitial[0], gameOptions.platformInitial[1]);
-        } else {
-          platformRandomHeight = Phaser.Math.Between(gameOptions.platformHeightRange[0], gameOptions.platformHeightRange[1]);
-        }
-
-        this.addPlatform(this.width + nextPlatformWidth / 2, platformRandomHeight, nextPlatformWidth);
-      }
+      this.platformSpawner();
     } else {
-      this.scoreCounter.paused = true;
+      this.theAfterLife();
+    }
+  }
+
+  backgroundParallax() {
+    if (this.player.body.velocity.y > 0 && !this.player.anims.isPlaying) {
+      this.player.anims.play('falling', true);
+    }
+    const bgs = [this.bg1, this.bg2, this.bg3, this.bg4, this.bg5, this.bg6, this.bg7, this.bg8]
+    const fact = [1.4, 1.45, 1.6, 1.7, 1.8, 2, 3.5, 5]
+
+    bgs.forEach((bg, index) => {
+      bg.tilePositionX += fact[index];
+    })
+  }
+
+  attack() {
+    this.player.setTexture('player_attack');
+    this.player.setSize(this.player.width, this.player.height);
+    this.player.anims.play('attack', true);
+
+    this.player.on('animationcomplete', () => {
+      this.player.setTexture('player');
+      this.player.setSize(this.player.width, this.player.height);
+
+      if (this.player.y < gameOptions.playerPositionY && this.player.y > 620 && this.alive) {
+        this.player.y = gameOptions.playerPositionY;
+        this.player.play('run');
+      }
 
       this.platformGroup.getChildren().forEach(platform => {
-        platform.body.setVelocityX(0);
+        const platformPosY = platform.body.y - platform.body.height + 10.5
+
+        if (this.player.y < platformPosY && this.player.y > platformPosY - 10.5 && this.alive) {
+          this.player.y = platformPosY;
+          this.player.play('run');
+        }
       });
-
-      this.spikeGroup.getChildren().forEach(spike => {
-        spike.setVelocityX(0);
-      })
-
-      this.floorSpikeGroup.getChildren().forEach(spike => {
-        spike.body.setVelocityX(0);
-      })
-
-      this.physics.world.removeCollider(this.spikeCollider);
-      this.physics.world.removeCollider(this.floorSpikeCollider);
-
-      this.input.keyboard.removeAllKeys(true);
-      this.input.enabled = false;
-
-      // Delayed call to game over scene with score as arg
-    }
+    })
   }
 
   jump() {
@@ -303,31 +281,6 @@ export default class Game extends Phaser.Scene {
     }
   }
 
-  attack() {
-    this.player.setTexture('player_attack');
-    this.player.setSize(this.player.width, this.player.height);
-    this.player.anims.play('attack', true);
-
-    this.player.on('animationcomplete', () => {
-      this.player.setTexture('player');
-      this.player.setSize(this.player.width, this.player.height);
-
-      if (this.player.y < gameOptions.playerPositionY && this.player.y > 620) {
-        this.player.y = gameOptions.playerPositionY;
-        this.player.play('run');
-      }
-
-      this.platformGroup.getChildren().forEach(platform => {
-        const platformPosY = platform.body.y - platform.body.height + 10.5
-
-        if (this.player.y < platformPosY && this.player.y > platformPosY - 10.5) {
-          this.player.y = platformPosY;
-          this.player.play('run');
-        }
-      });
-    })
-  }
-
   instaDrop() {
     if ((this.alive) && (!this.player.body.touching.down || (this.playerDrops > 0 && this.playerJumps < gameOptions.drops))) {
       if (this.player.body.touching.down) {
@@ -335,6 +288,14 @@ export default class Game extends Phaser.Scene {
       }
       this.player.setVelocityY(gameOptions.dropForce);
       this.playerDrops += 1;
+    }
+  }
+
+  scoreBonus() {
+    if (this.player.body.touching.down && this.platformTouching) {
+      this.scoreCounter.delay = gameOptions.scoreSpeed - 200;
+    } else {
+      this.scoreCounter.delay = gameOptions.scoreSpeed;
     }
   }
 
@@ -380,6 +341,45 @@ export default class Game extends Phaser.Scene {
     }
   }
 
+  platformSpawner() {
+    let minDistance = this.width;
+    this.platformGroup.getChildren().forEach(platform => {
+      const platformDistance = minDistance - platform.x - platform.displayWidth / 2;
+      if (platformDistance < minDistance){
+        minDistance = platformDistance;
+      }
+      if (platform.x < - platform.displayWidth / 2){
+        this.platformGroup.killAndHide(platform);
+        this.platformGroup.remove(platform);
+      }
+    }, this);
+
+    if (minDistance > this.nextPlatformDistance) {
+      let nextPlatformWidth = Phaser.Math.Between(gameOptions.platformSizeRange[0], gameOptions.platformSizeRange[1]);
+
+      let platformRandomHeight;
+      if (this.platformAdded == 0) {
+        platformRandomHeight = Phaser.Math.Between(gameOptions.platformInitial[0], gameOptions.platformInitial[1]);
+      } else {
+        platformRandomHeight = Phaser.Math.Between(gameOptions.platformHeightRange[0], gameOptions.platformHeightRange[1]);
+      }
+
+      this.addPlatform(this.width + nextPlatformWidth / 2, platformRandomHeight, nextPlatformWidth);
+    }
+  }
+
+  platformOverlap() {
+    if (this.platformGroup.getLength()) {
+      this.platformGroup.getChildren().forEach(platform => {
+        const platformPosY = platform.body.y - platform.body.height + 10.5;
+
+        this.physics.add.overlap(this.player, platform, () => {
+          this.player.y = platformPosY - 10.5;
+        });
+      });
+    }
+  }
+
   spawnSpike() {
     this.spikeAdded += 1;
     const h = this.textures.get('spike').getSourceImage().height;
@@ -390,5 +390,85 @@ export default class Game extends Phaser.Scene {
     floorSpike.body.setImmovable();
     floorSpike.body.setVelocityX(gameOptions.platformSpeed * -1);
     this.floorSpikeGroup.add(floorSpike);
+  }
+
+  spawnSkeleton() {
+    this.skeletonAlive = true;
+
+    const skeleton = this.physics.add.sprite(this.width, gameOptions.playerPositionY - 5, 'skeleton_walk');
+
+    skeleton.setVelocityX(gameOptions.platformSpeed * -1);
+    skeleton.anims.playReverse('skeleton_walking');
+    skeleton.setImmovable();
+
+    this.skeletonGroup.add(skeleton);
+  }
+
+  skeletonOverlap() {
+    if (this.skeletonGroup.getLength()) {
+      this.skeletonGroup.getChildren().forEach(skeleton => {
+        this.skeletonOverlap = this.physics.add.overlap(this.player, skeleton, () => {
+          if (this.player.anims.getName() === 'attack') {
+            this.skeletonAlive = false;
+            skeleton.anims.playReverse('skeleton_death');
+          }
+        })
+
+        if (skeleton.anims.getName() === 'skeleton_death') {
+          this.physics.world.removeCollider(this.skeletonOverlap);
+        }
+      });
+    }
+  }
+
+  objectRemove() {
+    this.spikeGroup.getChildren().forEach(spike => {
+      if (spike.x < - spike.displayWidth / 2) {
+        this.spikeGroup.killAndHide(spike);
+        this.spikeGroup.remove(spike);
+      }
+    }, this);
+
+    this.floorSpikeGroup.getChildren().forEach(spike => {
+      if (spike.x < - spike.displayWidth / 2) {
+        this.floorSpikeGroup.remove(spike);
+        spike.destroy();
+      }
+    }, this);
+
+    this.skeletonGroup.getChildren().forEach(skeleton => {
+      if (skeleton.x < - skeleton.displayWidth / 2) {
+        this.skeletonGroup.remove(skeleton);
+        skeleton.destroy();
+      }
+    }, this);
+  }
+
+  theAfterLife() {
+    let minDistance = this.width;
+    this.platformGroup.getChildren().forEach(platform => {
+      const platformDistance = minDistance - platform.x - platform.displayWidth / 2;
+      if (platformDistance < minDistance){
+        minDistance = platformDistance;
+      }
+      if (platform.x < - platform.displayWidth / 2){
+        this.platformGroup.killAndHide(platform);
+        this.platformGroup.remove(platform);
+      }
+    }, this);
+
+    if (minDistance > this.nextPlatformDistance) {
+      let nextPlatformWidth = Phaser.Math.Between(gameOptions.platformSizeRange[0], gameOptions.platformSizeRange[1]);
+
+      let platformRandomHeight;
+      if (this.platformAdded == 0) {
+        platformRandomHeight = Phaser.Math.Between(gameOptions.platformInitial[0], gameOptions.platformInitial[1]);
+      } else {
+        platformRandomHeight = Phaser.Math.Between(gameOptions.platformHeightRange[0], gameOptions.platformHeightRange[1]);
+      }
+
+      this.addPlatform(this.width + nextPlatformWidth / 2, platformRandomHeight, nextPlatformWidth);
+    }
+    // Delayed call to game over scene with score as arg
   }
 }

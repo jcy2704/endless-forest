@@ -43,7 +43,7 @@ export default {
 
     skeletonSpawnDistance: [0, 150],
 
-    skeletonRate: 6000,
+    skeletonSpawnRate: 6000,
 
     spikeWidth: 56,
 

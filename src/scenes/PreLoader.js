@@ -124,7 +124,7 @@ export default class PreLoad extends Phaser.Scene {
     });
 
     this.load.spritesheet("skeleton_walk", skeleton_walk, {
-      frameWidth: 45.13,
+      frameWidth: 45.4,
       frameHeight: 68
     });
 
@@ -143,14 +143,14 @@ export default class PreLoad extends Phaser.Scene {
     this.load.audio('ending', ending);
     this.load.audio('death_sound', death_sound);
 
-    this.load.on('progress', function (value) {
+    this.load.on('progress', (value) => {
       progressBar.clear();
       percentText.setText(parseInt(value * 100) + '%');
       progressBar.fillStyle(0x00cccc, 1);
       progressBar.fillRect(625 - 150, 362.5 - 15, 300 * value, 30);
     });
 
-    this.load.on('complete', function () {
+    this.load.on('complete', () => {
       progressBar.destroy();
       progressBox.destroy();
       loadingText.destroy();
@@ -231,8 +231,7 @@ export default class PreLoad extends Phaser.Scene {
         start: 0,
         end: 17
     }),
-    frameRate: 10,
-    repeat: -1
+    frameRate: 15,
   });
 
   this.anims.create({
@@ -242,7 +241,6 @@ export default class PreLoad extends Phaser.Scene {
         end: 14
     }),
     frameRate: 10,
-    repeat: -1
   });
 
   this.scene.start('title-screen');
