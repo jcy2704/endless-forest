@@ -13,6 +13,8 @@ import player_rest from '../assets/player/player_rest.png';
 import platform from '../assets/platform.png';
 import playBtn from '../assets/buttons/play.png';
 import exitBtn from '../assets/buttons/exit.png';
+import playRed from '../assets/buttons/red/play.png';
+import exitRed from '../assets/buttons/red/exit.png';
 import playPressed from '../assets/buttons/pressed/play.png';
 import exitPressed from '../assets/buttons/pressed/exit.png';
 import player_jump from '../assets/player/player_jump.png';
@@ -86,6 +88,8 @@ export default class PreLoad extends Phaser.Scene {
 
     this.load.image('play', playBtn);
     this.load.image('exit', exitBtn);
+    this.load.image('play_red', playRed);
+    this.load.image('exit_red', exitRed);
     this.load.image('playPressed', playPressed);
     this.load.image('exitPressed', exitPressed);
 

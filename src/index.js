@@ -6,6 +6,8 @@ import PreLoader from './scenes/PreLoader';
 import titleScene from './scenes/TitleScene';
 import instructions from './scenes/InstructionsScene';
 import gameover from './scenes/GameOver';
+import credit from './scenes/Credits';
+import playAgain from './scenes/playAgain';
 
 window.onload = () => {
   const config = {
@@ -19,10 +21,10 @@ window.onload = () => {
     physics: {
       default: 'arcade',
       arcade: {
-        debug: true
+        debug: false
       }
     },
-    scene: [Boot, PreLoader, titleScene, instructions, Game, gameover]
+    scene: [Boot, PreLoader, titleScene, instructions, Game, gameover, credit, playAgain]
   };
 
   const game = new Phaser.Game(config);

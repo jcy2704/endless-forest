@@ -15,7 +15,7 @@ export default class Game extends Phaser.Scene {
   }
 
   create() {
-    this.cameras.main.fadeIn(1500, 255, 255, 255);
+    this.cameras.main.fadeIn(1000, 255, 255, 255);
 
     this.gameMusic = this.sound.add('gameMusic', { volume: 0.25, loop: true });
     this.gameMusic.play();
@@ -441,8 +441,6 @@ export default class Game extends Phaser.Scene {
     }, this);
 
     this.skeletonGroup.getChildren().forEach(skeleton => {
-
-
       if (skeleton.x < - skeleton.displayWidth / 2 && skeleton.anims.getName() === 'skeleton_death') {
         this.kills += 1;
         this.skeletonGroup.remove(skeleton);

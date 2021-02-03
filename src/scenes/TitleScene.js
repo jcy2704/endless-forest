@@ -38,7 +38,7 @@ export default class TitleScene extends Phaser.Scene {
     const title = this.make.text({
       x: this.width/2,
       y: this.height/2 - 140,
-      text: 'ENDLESS FORREST',
+      text: 'ENDLESS FOREST',
       style: {
         fontSize: '90px',
         fill: '#ffffff',
@@ -58,6 +58,7 @@ export default class TitleScene extends Phaser.Scene {
       .on('pointerdown', () => this.exitIsPressed() )
       .on('pointerup', () => {
         this.exitNotPressed();
+        this.exit();
       });
 
     ['A', 'S', 'SPACE', 'ENTER'].forEach(key => {
@@ -72,6 +73,14 @@ export default class TitleScene extends Phaser.Scene {
     this.menuSong.stop();
     this.cameras.main.fadeOut(2000, 255, 255, 255);
     this.scene.start('instructions');
+  }
+
+  exit() {
+    this.menuSong.stop();
+    const ending = this.sound.add('ending', { volume: 0.25 });
+    ending.play();
+    this.cameras.main.fadeOut(2000, 0, 0, 0);
+    this.scene.start('credits', { song: ending });
   }
 
   update() {

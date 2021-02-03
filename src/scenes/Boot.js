@@ -22,7 +22,7 @@ export default class Boot extends Phaser.Scene {
     const title = this.make.text({
       x: this.width/2,
       y: this.height/2,
-      text: 'ENDLESS FORREST',
+      text: 'ENDLESS FOREST',
       style: {
         fontSize: '100px',
         fill: '#ffffff',

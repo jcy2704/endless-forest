@@ -16,6 +16,9 @@ export default class GameOver extends Phaser.Scene {
   }
 
   create() {
+    const ending = this.sound.add('ending', { volume: 0.25 });
+    ending.play();
+
     this.cameras.main.fadeIn(1000, 0, 0, 0);
 
     const title = this.make.text({
@@ -33,7 +36,7 @@ export default class GameOver extends Phaser.Scene {
     const score = this.make.text({
       x: this.width/2,
       y: this.height/2 + title.height/2 + 40,
-      text: `Score: ${this.score}  Kills: ${this.kills}`,
+      text: `Score: ${this.score}  |  Kills: ${this.kills}`,
       style: {
         fontSize: '30px',
         fill: '#ffffff',
