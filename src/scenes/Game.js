@@ -157,6 +157,8 @@ export default class Game extends Phaser.Scene {
       this.player.anims.play('dead', true);
       this.sound.play('death_sound', { volume: 0.25 });
       this.player.body.setVelocityY(-200);
+
+      this.outro();
     }, null, this);
 
     this.spikeFloor = this.time.addEvent({
@@ -176,6 +178,8 @@ export default class Game extends Phaser.Scene {
       this.player.anims.play('dead', true);
       this.sound.play('death_sound', { volume: 0.25 });
       this.player.body.setVelocityY(-200);
+
+      this.outro();
     }, null, this);
 
     this.skeletonSpawner = this.time.addEvent({
@@ -196,8 +200,10 @@ export default class Game extends Phaser.Scene {
         this.player.anims.play('dead', true);
         this.sound.play('death_sound', { volume: 0.25 });
         this.player.body.setVelocityY(-200);
+
+        this.outro();
       }
-    }, null, this)
+    }, null, this);
   }
 
   update() {
@@ -244,6 +250,7 @@ export default class Game extends Phaser.Scene {
     } else {
       this.theAfterLife();
     }
+
   }
 
   jump() {
@@ -468,6 +475,10 @@ export default class Game extends Phaser.Scene {
 
     this.skeletonGroup.getChildren().forEach(skeleton => {
       skeleton.body.setVelocityX(-50);
+
+      if (skeleton.anims.getName() === 'skeleton_death') {
+        skeleton.body.setVelocityX(0);
+      }
     })
 
     this.physics.world.removeCollider(this.spikeCollider);
@@ -480,8 +491,16 @@ export default class Game extends Phaser.Scene {
 
     this.time.delayedCall(1000, () => {
       this.player.setTexture('player_dead', 4);
+    });
+  }
+
+  outro() {
+    this.time.delayedCall(3000, () => {
+      this.cameras.main.fadeOut(1000, 0, 0, 0);
     })
 
-    // Delayed call to game over scene with score as arg
+    this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (cam, effect) => {
+      this.scene.start('game-over', { score: this._score, kills: this.kills });
+    });
   }
 }
