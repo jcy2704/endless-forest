@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import Phaser from 'phaser';
 import createAligned from '../javascript/createAligned';
 import gameOptions from '../options/gameConfig';
@@ -27,7 +28,7 @@ export default class Game extends Phaser.Scene {
     this.platformAdded = 0;
     this.spikeAdded = 0;
     this.kills = 0;
-    this._score = 0;
+    this.score = 0;
     this.scoreSpeed = gameOptions.scoreSpeed;
 
     const bgh = this.textures.get('background').getSourceImage().height;
@@ -49,23 +50,23 @@ export default class Game extends Phaser.Scene {
     this.bg8.body.setSize(this.width, 55);
 
     this.scoreText = this.make.text({
-      x: this.width-160,
+      x: this.width - 160,
       y: 40,
       text: 'SCORE: 0',
       style: {
         fontSize: '20px',
         fill: '#ffffff',
-        fontFamily: 'Arcadia, monospace'
-      }
+        fontFamily: 'Arcadia, monospace',
+      },
     });
 
     this.scoreCounter = this.time.addEvent({
       delay: this.scoreSpeed,
       callback: () => {
-        this._score += 1;
+        this.score += 1;
       },
       callbackScope: this,
-      loop: true
+      loop: true,
     });
 
     this.player = this.physics.add.sprite(gameOptions.playerPositionX, gameOptions.playerPositionY, 'player');
@@ -75,7 +76,7 @@ export default class Game extends Phaser.Scene {
       this.platformTouching = false;
       if (!this.player.anims.isPlaying && this.alive) {
         this.player.setTexture('player');
-        this.player.anims.play("run", true);
+        this.player.anims.play('run', true);
       }
     });
 
@@ -87,7 +88,7 @@ export default class Game extends Phaser.Scene {
       space: 'SPACE',
       a: 'A',
       s: 'S',
-      w: 'W'
+      w: 'W',
     });
 
     keys.space.on('down', this.jump, this);
@@ -95,7 +96,7 @@ export default class Game extends Phaser.Scene {
     keys.a.on('down', this.attack, this);
     keys.s.on('down', this.instaDrop, this);
 
-    this.input.on("pointerdown", (pointer) => {
+    this.input.on('pointerdown', (pointer) => {
       if (pointer.rightButtonDown()) {
         this.instaDrop();
       } else if (pointer.leftButtonDown()) {
@@ -106,13 +107,13 @@ export default class Game extends Phaser.Scene {
     this.platformGroup = this.add.group({
       removeCallback: (platform) => {
         platform.scene.platformPool.add(platform);
-      }
+      },
     });
 
     this.platformPool = this.add.group({
       removeCallback: (platform) => {
         platform.scene.platformGroup.add(platform);
-      }
+      },
     });
 
     const randomPlatformWidth = Phaser.Math.Between(gameOptions.platformSizeRange[0], gameOptions.platformSizeRange[1]);
@@ -126,20 +127,20 @@ export default class Game extends Phaser.Scene {
       this.player.setVelocityX(gameOptions.platformSpeed);
       if (!this.player.anims.isPlaying && this.alive) {
         this.player.setTexture('player');
-        this.player.anims.play("run", true);
+        this.player.anims.play('run', true);
       }
     }, null, this);
 
     this.spikeGroup = this.add.group({
       removeCallback: (spike) => {
         spike.scene.spikePool.add(spike);
-      }
+      },
     });
 
     this.spikePool = this.add.group({
       removeCallback: (spike) => {
         spike.scene.spikeGroup.add(spike);
-      }
+      },
     });
 
     this.spikeCollider = this.physics.add.collider(this.player, this.spikeGroup, () => {
@@ -158,8 +159,8 @@ export default class Game extends Phaser.Scene {
         this.spawnSpike();
       },
       callbackScope: this,
-      loop: true
-    })
+      loop: true,
+    });
 
     this.floorSpikeGroup = this.add.group();
 
@@ -179,13 +180,13 @@ export default class Game extends Phaser.Scene {
         this.spawnSkeleton();
       },
       callbackScope: this,
-      loop: true
-    })
+      loop: true,
+    });
 
     this.skeletonGroup = this.add.group();
 
     this.skeletonCollider = this.physics.add.collider(this.player, this.skeletonGroup, () => {
-      if (this.alive && this.skeletonAlive && this.player.anims.getName() != 'attack') {
+      if (this.alive && this.skeletonAlive && this.player.anims.getName() !== 'attack') {
         this.alive = false;
         this.player.setTexture('player_dead');
         this.player.anims.play('dead', true);
@@ -213,7 +214,7 @@ export default class Game extends Phaser.Scene {
               this.skeletonAlive = false;
               skeleton.anims.playReverse('skeleton_death');
             }
-          })
+          });
 
           if (skeleton.anims.getName() === 'skeleton_death') {
             this.physics.world.removeCollider(this.skeletonOverlap);
@@ -223,7 +224,7 @@ export default class Game extends Phaser.Scene {
 
       this.backgroundParallax();
 
-      this.scoreText.setText(`SCORE: ${this._score}`);
+      this.scoreText.setText(`SCORE: ${this.score}`);
 
       this.scoreText.x = this.width - this.scoreText.width - 50;
 
@@ -233,7 +234,6 @@ export default class Game extends Phaser.Scene {
     } else {
       this.theAfterLife();
     }
-
   }
 
   jump() {
@@ -263,14 +263,14 @@ export default class Game extends Phaser.Scene {
       }
 
       this.platformGroup.getChildren().forEach(platform => {
-        const platformPosY = platform.body.y - platform.body.height + 10.5
+        const platformPosY = platform.body.y - platform.body.height + 10.5;
 
         if (this.player.y < platformPosY && this.player.y > platformPosY - 10.5 && this.alive) {
           this.player.y = platformPosY;
           this.player.play('run');
         }
       });
-    })
+    });
   }
 
   instaDrop() {
@@ -296,7 +296,7 @@ export default class Game extends Phaser.Scene {
       platform.displayWidth = platformWidth;
       platform.tileScaleX = 1 / platform.scaleX;
     } else {
-      platform = this.add.tileSprite(posX, posY, platformWidth, 50, "platform");
+      platform = this.add.tileSprite(posX, posY, platformWidth, 50, 'platform');
       this.physics.add.existing(platform);
       platform.body.setImmovable();
       platform.body.setVelocityX(gameOptions.platformSpeed * -1);
@@ -310,13 +310,13 @@ export default class Game extends Phaser.Scene {
       if (Phaser.Math.Between(1, 100) <= gameOptions.spikePercent) {
         if (this.spikePool.getLength()) {
           const spike = this.spikePool.getFirst();
-          spike.x = posX - platform.body.width/2 + Phaser.Math.Between(1, platform.body.width - gameOptions.spikeWidth);
-          spike.y = posY - platform.body.height/2;
+          spike.x = posX - platform.body.width / 2 + Phaser.Math.Between(1, platform.body.width - gameOptions.spikeWidth);
+          spike.y = posY - platform.body.height / 2;
           spike.active = true;
           spike.visible = true;
           this.spikePool.remove(spike);
         } else {
-          const spike = this.physics.add.sprite(posX - platform.body.width/2 + Phaser.Math.Between(1, platform.body.width - gameOptions.spikeWidth), posY - platform.body.height/2, 'spike').setOrigin(0, 1);
+          const spike = this.physics.add.sprite(posX - platform.body.width / 2 + Phaser.Math.Between(1, platform.body.width - gameOptions.spikeWidth), posY - platform.body.height / 2, 'spike').setOrigin(0, 1);
           spike.setImmovable();
           spike.setVelocityX(platform.body.velocity.x);
           this.spikeGroup.add(spike);
@@ -329,20 +329,20 @@ export default class Game extends Phaser.Scene {
     let minDistance = this.width;
     this.platformGroup.getChildren().forEach(platform => {
       const platformDistance = minDistance - platform.x - platform.displayWidth / 2;
-      if (platformDistance < minDistance){
+      if (platformDistance < minDistance) {
         minDistance = platformDistance;
       }
-      if (platform.x < - platform.displayWidth / 2){
+      if (platform.x < -platform.displayWidth / 2) {
         this.platformGroup.killAndHide(platform);
         this.platformGroup.remove(platform);
       }
     }, this);
 
     if (minDistance > this.nextPlatformDistance) {
-      let nextPlatformWidth = Phaser.Math.Between(gameOptions.platformSizeRange[0], gameOptions.platformSizeRange[1]);
+      const nextPlatformWidth = Phaser.Math.Between(gameOptions.platformSizeRange[0], gameOptions.platformSizeRange[1]);
 
       let platformRandomHeight;
-      if (this.platformAdded == 0) {
+      if (this.platformAdded === 0) {
         platformRandomHeight = Phaser.Math.Between(gameOptions.platformInitial[0], gameOptions.platformInitial[1]);
       } else {
         platformRandomHeight = Phaser.Math.Between(gameOptions.platformHeightRange[0], gameOptions.platformHeightRange[1]);
@@ -400,35 +400,35 @@ export default class Game extends Phaser.Scene {
     if (this.player.body.velocity.y > 0 && !this.player.anims.isPlaying) {
       this.player.anims.play('falling', true);
     }
-    const bgs = [this.bg1, this.bg2, this.bg3, this.bg4, this.bg5, this.bg6, this.bg7, this.bg8]
-    const fact = [1.45, 1.5, 1.65, 1.75, 1.85, 2.1, 3.55, 5.1]
+    const bgs = [this.bg1, this.bg2, this.bg3, this.bg4, this.bg5, this.bg6, this.bg7, this.bg8];
+    const fact = [1.45, 1.5, 1.65, 1.75, 1.85, 2.1, 3.55, 5.1];
 
     bgs.forEach((bg, index) => {
       bg.tilePositionX += fact[index];
-    })
+    });
   }
 
   objectRemove() {
     this.spikeGroup.getChildren().forEach(spike => {
-      if (spike.x < - spike.displayWidth / 2) {
+      if (spike.x < -spike.displayWidth / 2) {
         this.spikeGroup.killAndHide(spike);
         this.spikeGroup.remove(spike);
       }
     }, this);
 
     this.floorSpikeGroup.getChildren().forEach(spike => {
-      if (spike.x < - spike.displayWidth / 2) {
+      if (spike.x < -spike.displayWidth / 2) {
         this.floorSpikeGroup.remove(spike);
         spike.destroy();
       }
     }, this);
 
     this.skeletonGroup.getChildren().forEach(skeleton => {
-      if (skeleton.x < - skeleton.displayWidth / 2 && skeleton.anims.getName() === 'skeleton_death') {
+      if (skeleton.x < -skeleton.displayWidth / 2 && skeleton.anims.getName() === 'skeleton_death') {
         this.kills += 1;
         this.skeletonGroup.remove(skeleton);
         skeleton.destroy();
-      } else if (skeleton.x < - skeleton.displayWidth / 2) {
+      } else if (skeleton.x < -skeleton.displayWidth / 2) {
         this.skeletonGroup.remove(skeleton);
         skeleton.destroy();
       }
@@ -448,11 +448,11 @@ export default class Game extends Phaser.Scene {
 
     this.spikeGroup.getChildren().forEach(spike => {
       spike.setVelocityX(0);
-    })
+    });
 
     this.floorSpikeGroup.getChildren().forEach(spike => {
       spike.body.setVelocityX(0);
-    })
+    });
 
     this.skeletonGroup.getChildren().forEach(skeleton => {
       skeleton.body.setVelocityX(-50);
@@ -460,7 +460,7 @@ export default class Game extends Phaser.Scene {
       if (skeleton.anims.getName() === 'skeleton_death') {
         skeleton.body.setVelocityX(0);
       }
-    })
+    });
 
     this.input.keyboard.removeAllKeys();
 
@@ -477,10 +477,10 @@ export default class Game extends Phaser.Scene {
   outro() {
     this.time.delayedCall(3000, () => {
       this.cameras.main.fadeOut(1000, 0, 0, 0);
-    })
+    });
 
-    this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (cam, effect) => {
-      this.scene.start('game-over', { score: this._score, kills: this.kills });
+    this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
+      this.scene.start('game-over', { score: this.score, kills: this.kills });
     });
   }
 }

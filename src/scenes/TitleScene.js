@@ -1,3 +1,4 @@
+import Phaser from 'phaser';
 import createAligned from '../javascript/createAligned';
 
 export default class TitleScene extends Phaser.Scene {
@@ -36,26 +37,26 @@ export default class TitleScene extends Phaser.Scene {
     this.player.anims.play('rest');
 
     const title = this.make.text({
-      x: this.width/2,
-      y: this.height/2 - 140,
+      x: this.width / 2,
+      y: this.height / 2 - 140,
       text: 'ENDLESS FOREST',
       style: {
         fontSize: '90px',
         fill: '#ffffff',
-        fontFamily: 'Arcadia, monospace'
-      }
+        fontFamily: 'Arcadia, monospace',
+      },
     });
-    title.setOrigin(0.5, 0.5)
+    title.setOrigin(0.5, 0.5);
 
-    this.playBtn = this.add.image(this.width/2, this.height/2, 'play').setInteractive({ useHandCursor: true }).setOrigin(0.5, 0.5)
-      .on('pointerdown', () => this.playIsPressed() )
+    this.playBtn = this.add.image(this.width / 2, this.height / 2, 'play').setInteractive({ useHandCursor: true }).setOrigin(0.5, 0.5)
+      .on('pointerdown', () => this.playIsPressed())
       .on('pointerup', () => {
         this.playNotPressed();
         this.start();
       });
 
-    this.exitBtn = this.add.image(this.width/2, this.height/2 + 100, 'exit').setInteractive({ useHandCursor: true }).setOrigin(0.5, 0.5)
-      .on('pointerdown', () => this.exitIsPressed() )
+    this.exitBtn = this.add.image(this.width / 2, this.height / 2 + 100, 'exit').setInteractive({ useHandCursor: true }).setOrigin(0.5, 0.5)
+      .on('pointerdown', () => this.exitIsPressed())
       .on('pointerup', () => {
         this.exitNotPressed();
         this.exit();

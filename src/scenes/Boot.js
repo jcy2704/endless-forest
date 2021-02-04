@@ -20,14 +20,14 @@ export default class Boot extends Phaser.Scene {
     this.bootSound.play();
 
     const title = this.make.text({
-      x: this.width/2,
-      y: this.height/2,
+      x: this.width / 2,
+      y: this.height / 2,
       text: 'ENDLESS FOREST',
       style: {
         fontSize: '100px',
         fill: '#ffffff',
-        fontFamily: 'Arcadia, monospace'
-      }
+        fontFamily: 'Arcadia, monospace',
+      },
     });
     title.setOrigin(0.5, 0.5);
 
@@ -35,9 +35,9 @@ export default class Boot extends Phaser.Scene {
 
     this.time.delayedCall(2000, () => {
       this.cameras.main.fadeOut(1000, 0, 0, 0);
-    })
+    });
 
-    this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (cam, effect) => {
+    this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
       this.scene.start('preLoader');
     });
 

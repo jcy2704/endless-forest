@@ -10,10 +10,6 @@ import credit from './scenes/Credits';
 import playAgain from './scenes/playAgain';
 import leaderboardScene from './scenes/LeaderboardScene';
 import leaderboardTable from './scenes/LeaderboardTable';
-import favicon from './assets/favicon.png';
-
-const link = document.querySelector("link[rel~='icon']");
-link.href = favicon;
 
 window.onload = () => {
   const config = {
@@ -22,22 +18,23 @@ window.onload = () => {
     width: 1250,
     height: 725,
     scale: {
-      autoCenter: Phaser.Scale.CENTER_BOTH
+      autoCenter: Phaser.Scale.CENTER_BOTH,
     },
     physics: {
       default: 'arcade',
       arcade: {
-        debug: false
-      }
+        debug: false,
+      },
     },
     dom: {
       createContainer: true,
     },
-    scene: [Boot, PreLoader, titleScene, instructions, Game, gameover, leaderboardScene, leaderboardTable, credit, playAgain]
+    // eslint-disable-next-line max-len
+    scene: [Boot, PreLoader, titleScene, instructions, Game, gameover, leaderboardScene, leaderboardTable, credit, playAgain],
   };
 
+  // eslint-disable-next-line no-unused-vars
   const game = new Phaser.Game(config);
 
   window.focus();
-}
-
+};

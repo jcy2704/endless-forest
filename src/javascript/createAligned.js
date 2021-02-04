@@ -17,16 +17,17 @@ export default (scene, heightDiff, image, origin, widthDiff = 0) => {
       .setOrigin(0, 0);
 
     x += m.width;
-  } else if (origin === true && image != 'upTree') {
+  } else if (origin === true && image !== 'upTree') {
     m = scene.add.tileSprite(x, scene.scale.height + heightDiff, scene.scale.width, h, image)
       .setOrigin(0, 1);
 
     x += m.width;
   } else {
-    m = scene.add.tileSprite(l + widthDiff, scene.scale.height / 2 + heightDiff, scene.scale.width, h, image)
+    const posY = scene.scale.height / 2 + heightDiff;
+    m = scene.add.tileSprite(l + widthDiff, posY, scene.scale.width, h, image);
 
     l += m.width;
   }
 
   return m;
-}
+};

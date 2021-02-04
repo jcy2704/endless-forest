@@ -21,34 +21,34 @@ export default class LeaderboardScene extends Phaser.Scene {
     this.totalScore = this.subScore + this.kills * 10;
 
     this.make.text({
-      x: this.width/2,
-      y: this.height/2 - 150,
+      x: this.width / 2,
+      y: this.height / 2 - 150,
       text: `Total Score\n${this.totalScore}`,
       style: {
         fontSize: '60px',
         fill: '#ffffff',
         fontFamily: 'Arcadia, monospace',
-        align: 'center'
-      }
-    }).setOrigin(0.5, 0.5)
+        align: 'center',
+      },
+    }).setOrigin(0.5, 0.5);
 
     this.make.text({
-      x: this.width/2,
-      y: this.height/2,
+      x: this.width / 2,
+      y: this.height / 2,
       text: `Score: ${this.subScore} | Kills: ${this.kills}`,
       style: {
         fontSize: '30px',
         fill: '#ffffff',
-        fontFamily: 'Arcadia, monospace'
-      }
-    }).setOrigin(0.5, 0.5)
+        fontFamily: 'Arcadia, monospace',
+      },
+    }).setOrigin(0.5, 0.5);
 
     const keys = this.input.keyboard.addKeys({
       space: 'SPACE',
       a: 'A',
       s: 'S',
       w: 'W',
-      enter: 'ENTER'
+      enter: 'ENTER',
     });
 
     keys.a.on('down', (e) => {
@@ -79,7 +79,7 @@ export default class LeaderboardScene extends Phaser.Scene {
     form.addEventListener('submit', (e) => {
       e.preventDefault();
       const formData = new FormData(form).entries();
-      const player = Object.fromEntries(formData).player;
+      const { player } = Object.fromEntries(formData);
 
       if (player === '') {
         input.value = '';
@@ -90,8 +90,8 @@ export default class LeaderboardScene extends Phaser.Scene {
 
         this.cameras.main.fadeOut(1000, 0, 0, 0);
 
-        this.scene.start('leaderboard-table', { player: player, score: this.totalScore });
+        this.scene.start('leaderboard-table', { player, score: this.totalScore });
       }
-    })
+    });
   }
 }
