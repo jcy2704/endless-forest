@@ -10,8 +10,10 @@ import credit from './scenes/Credits';
 import playAgain from './scenes/playAgain';
 import leaderboardScene from './scenes/LeaderboardScene';
 import leaderboardTable from './scenes/LeaderboardTable';
+import favicon from './assets/favicon.png';
 
-const gameKey = process.env.GAME_KEY;
+const link = document.querySelector("link[rel~='icon']");
+link.href = favicon;
 
 window.onload = () => {
   const config = {
@@ -35,6 +37,7 @@ window.onload = () => {
   };
 
   const game = new Phaser.Game(config);
+
   window.focus();
 }
 

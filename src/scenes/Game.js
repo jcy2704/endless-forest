@@ -20,7 +20,6 @@ export default class Game extends Phaser.Scene {
 
     this.input.mouse.disableContextMenu();
 
-    // Variables
     this.alive = true;
     this.skeletonAlive = true;
     this.playerJumps = 0;
@@ -31,7 +30,6 @@ export default class Game extends Phaser.Scene {
     this._score = 0;
     this.scoreSpeed = gameOptions.scoreSpeed;
 
-    // Background
     const bgh = this.textures.get('background').getSourceImage().height;
 
     this.add.tileSprite(0, this.height, this.width, bgh, 'background')
@@ -50,7 +48,6 @@ export default class Game extends Phaser.Scene {
     this.bg8.body.setImmovable();
     this.bg8.body.setSize(this.width, 55);
 
-    // Score System
     this.scoreText = this.make.text({
       x: this.width-160,
       y: 40,
@@ -71,7 +68,6 @@ export default class Game extends Phaser.Scene {
       loop: true
     });
 
-    // Player
     this.player = this.physics.add.sprite(gameOptions.playerPositionX, gameOptions.playerPositionY, 'player');
     this.player.setGravityY(gameOptions.playerGravity);
 
@@ -87,7 +83,6 @@ export default class Game extends Phaser.Scene {
       this.player.setPosition(200, this.height - 104);
     });
 
-    // Inputs
     const keys = this.input.keyboard.addKeys({
       space: 'SPACE',
       a: 'A',
@@ -108,7 +103,6 @@ export default class Game extends Phaser.Scene {
       }
     }, this);
 
-    // Platforms
     this.platformGroup = this.add.group({
       removeCallback: (platform) => {
         platform.scene.platformPool.add(platform);
@@ -136,7 +130,6 @@ export default class Game extends Phaser.Scene {
       }
     }, null, this);
 
-    // Spikes
     this.spikeGroup = this.add.group({
       removeCallback: (spike) => {
         spike.scene.spikePool.add(spike);
