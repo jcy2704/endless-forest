@@ -80,7 +80,7 @@ export default class TitleScene extends Phaser.Scene {
     const ending = this.sound.add('ending', { volume: 0.25 });
     ending.play();
     this.cameras.main.fadeOut(2000, 0, 0, 0);
-    this.scene.start('credits', { song: ending });
+    this.scene.start('leaderboard-table', { song: ending });
   }
 
   update() {

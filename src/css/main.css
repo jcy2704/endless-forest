@@ -8,3 +8,15 @@ body {
   background-color: black;
   height: 100vh;
 }
+
+.playerInput {
+  width: 300px;
+  height: 40px;
+  padding: 10px;
+  font-size: 1.4em;
+  font-family: 'Arcadia', monospace;
+}
+
+.input-warning::placeholder {
+  color: red;
+}

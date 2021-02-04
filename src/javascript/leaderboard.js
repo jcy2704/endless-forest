@@ -7,43 +7,56 @@ export default class Leaderboard {
   }
 
   async getScores() {
-    const scoreArray = [];
+    return new Promise((resolve, reject) => {
+      const scoreArray = [];
 
-    await fetch(url, { mode: 'cors' })
-    .then(result => result.json())
-    .then(({ result }) => {
-      result.forEach(({ user, score }) => {
-        scoreArray.push({ user, score });
-      });
-
-      const scoreSorted = scoreArray.sort((a, b) => {
-        a = parseInt(a.score);
-        b = parseInt(b.score);
-        if (a < b) {
-          return 1;
-        }
-        if (a > b) {
-          return -1;
-        }
-        return 0;
+      fetch(url, { mode: 'cors' })
+      .then(result => result.json())
+      .catch(error => {
+        reject(error);
       })
-      console.log(scoreSorted);
-      return scoreSorted;
-    })
+      .then(({ result }) => {
+        result.forEach(({ user, score }) => {
+          scoreArray.push({ user, score });
+        });
+
+        const scoreSorted = scoreArray.sort((a, b) => {
+          a = parseInt(a.score);
+          b = parseInt(b.score);
+          if (a < b) {
+            return 1;
+          }
+          if (a > b) {
+            return -1;
+          }
+          return 0;
+        });
+
+        resolve(scoreSorted);
+      });
+    });
   }
 
   async postScore(player, score) {
-    console.log(process.env.GAME_KEY_ID);
-    const entry = { user: player, score: String(score) };
+    return new Promise((resolve, reject) => {
+      const entry = { user: player, score: String(score) };
 
-    await fetch(url, {
-      method: 'POST',
-      mode: 'cors',
-      headers: { 'Content-type': 'application/json;charset=UTF-8' },
-      body: JSON.stringify(entry)
+      fetch(url, {
+        method: 'POST',
+        mode: 'cors',
+        headers: { 'Content-type': 'application/json;charset=UTF-8' },
+        body: JSON.stringify(entry)
+      })
+      .then((result) => {
+        if (result.ok) return result.json();
+        throw new Error('An error ocurred');
+      })
+      .catch((error) => {
+        reject(error);
+      })
+      .then(() => {
+        return resolve(this.getScores());
+      });
     })
-    .catch(error => console.error(error));
-
-    return this.getScores();
   }
 }

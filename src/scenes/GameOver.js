@@ -45,14 +45,15 @@ export default class GameOver extends Phaser.Scene {
     });
     score.setOrigin(0.5, 0.5);
 
+    const ending = this.sound.add('ending', { volume: 0.25 });
+
     this.time.delayedCall(3000, () => {
-      const ending = this.sound.add('ending', { volume: 0.25 });
       ending.play();
       this.cameras.main.fadeOut(1000, 0, 0, 0);
     })
 
-    // this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (cam, effect) => {
-    //   this.scene.start('leaderboard', { score: this.score, kills: this.kills });
-    // });
+    this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (cam, effect) => {
+      this.scene.start('leaderboard-scene', { score: this.score, kills: this.kills, song: ending });
+    });
   }
 }

@@ -8,8 +8,6 @@ export default class Game extends Phaser.Scene {
   }
 
   preload() {
-    this.cursors = this.input.keyboard.createCursorKeys();
-
     this.width = this.scale.width;
     this.height = this.scale.height;
   }
@@ -207,14 +205,6 @@ export default class Game extends Phaser.Scene {
   }
 
   update() {
-    if (this.cursors.left.isDown) {
-      this.scene.pause();
-    } else if (this.cursors.right.isDown) {
-      this.alive = false;
-    } else if (this.cursors.up.isDown) {
-      this.scene.resume();
-    }
-
     this.player.x = gameOptions.playerPositionX;
     this.player.setVelocityX(0);
 
@@ -479,13 +469,12 @@ export default class Game extends Phaser.Scene {
       }
     })
 
+    this.input.keyboard.removeAllKeys();
+
     this.physics.world.removeCollider(this.spikeCollider);
     this.physics.world.removeCollider(this.floorSpikeCollider);
     this.physics.world.removeCollider(this.skeletonCollider);
     this.physics.world.removeCollider(this.skeletonOverlap);
-
-    this.input.keyboard.removeAllKeys(true);
-    this.input.enabled = false;
 
     this.time.delayedCall(1000, () => {
       this.player.setTexture('player_dead', 4);

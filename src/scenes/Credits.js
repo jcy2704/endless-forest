@@ -50,14 +50,14 @@ export default class Credits extends Phaser.Scene {
           this.time.delayedCall(3000, () => {
             const credit = this.createText(value2, 50, 'Monogram');
             if (creditsAdded >= 1) {
-              credit.y = prevCredit.y + prevCredit.height * 3;
+              credit.y = prevCredit.y + 200;
             }
             prevCredit = credit;
             creditsAdded += 1;
           })
 
           if (key === 'font') {
-            this.time.delayedCall(30000, () => {
+            this.time.delayedCall(25000, () => {
               this.cameras.main.fadeOut(1000, 0, 0, 0);
             })
 

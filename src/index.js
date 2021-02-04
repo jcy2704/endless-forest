@@ -8,14 +8,15 @@ import instructions from './scenes/InstructionsScene';
 import gameover from './scenes/GameOver';
 import credit from './scenes/Credits';
 import playAgain from './scenes/playAgain';
-import Leaderboard from './javascript/leaderboard';
+import leaderboardScene from './scenes/LeaderboardScene';
+import leaderboardTable from './scenes/LeaderboardTable';
 
 const gameKey = process.env.GAME_KEY;
 
 window.onload = () => {
   const config = {
     type: Phaser.AUTO,
-    parent: 'endless-runner',
+    parent: 'divId',
     width: 1250,
     height: 725,
     scale: {
@@ -27,12 +28,13 @@ window.onload = () => {
         debug: false
       }
     },
-    scene: [Boot, PreLoader, titleScene, instructions, Game, gameover, credit, playAgain]
+    dom: {
+      createContainer: true,
+    },
+    scene: [Boot, PreLoader, titleScene, instructions, Game, gameover, leaderboardScene, leaderboardTable, credit, playAgain]
   };
 
   const game = new Phaser.Game(config);
-  const leaderboard = new Leaderboard();
-  window.leaderboard = leaderboard;
   window.focus();
 }
 
