@@ -31,6 +31,7 @@ import spike_collection from '../assets/obstacle/spike collection.png';
 import instruction_bg from '../assets/paperbackground.png';
 import loadFont from '../javascript/fontLoader';
 import death_sound from '../assets/sound effects/death_4_alex.wav';
+import gameover from '../assets/sound effects/gameover.mp3';
 
 export default class PreLoad extends Phaser.Scene {
   constructor() {
@@ -146,6 +147,7 @@ export default class PreLoad extends Phaser.Scene {
     this.load.audio('gameMusic', gameMusic);
     this.load.audio('ending', ending);
     this.load.audio('death_sound', death_sound);
+    this.load.audio('gameover', gameover);
 
     this.load.on('progress', (value) => {
       progressBar.clear();

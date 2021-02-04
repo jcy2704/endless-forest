@@ -16,8 +16,8 @@ export default class GameOver extends Phaser.Scene {
   }
 
   create() {
-    const ending = this.sound.add('ending', { volume: 0.25 });
-    ending.play();
+    const gameOver = this.sound.add('gameover', { volume: 0.5 })
+    gameOver.play();
 
     this.cameras.main.fadeIn(1000, 0, 0, 0);
 
@@ -46,6 +46,8 @@ export default class GameOver extends Phaser.Scene {
     score.setOrigin(0.5, 0.5);
 
     this.time.delayedCall(3000, () => {
+      const ending = this.sound.add('ending', { volume: 0.25 });
+      ending.play();
       this.cameras.main.fadeOut(1000, 0, 0, 0);
     })
 

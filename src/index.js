@@ -8,6 +8,9 @@ import instructions from './scenes/InstructionsScene';
 import gameover from './scenes/GameOver';
 import credit from './scenes/Credits';
 import playAgain from './scenes/playAgain';
+import Leaderboard from './javascript/leaderboard';
+
+const gameKey = process.env.GAME_KEY;
 
 window.onload = () => {
   const config = {
@@ -28,6 +31,8 @@ window.onload = () => {
   };
 
   const game = new Phaser.Game(config);
+  const leaderboard = new Leaderboard();
+  window.leaderboard = leaderboard;
   window.focus();
 }
 
