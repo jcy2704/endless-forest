@@ -69,6 +69,7 @@ export default class playAgain extends Phaser.Scene {
   }
 
   exit() {
+    this.ending.stop();
     this.cameras.main.fadeOut(2000, 0, 0, 0);
     this.scene.stop();
   }

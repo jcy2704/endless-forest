@@ -26,7 +26,7 @@ export default class Credits extends Phaser.Scene {
           ending: 'Ending Song:\nIII Finale Slowly          Dee Yan-Key'
         },
         fx: {
-          die: 'Fx:\nSuper Dialogue Pack        Dillon Becker'
+          die: 'SFx:\nSuper Dialogue Pack        Dillon Becker'
         },
         font: {
           arcadia: '          Font:\n          Arcadia          Alex Wan'
@@ -68,6 +68,12 @@ export default class Credits extends Phaser.Scene {
         }
       }
     })
+
+    const keyP = this.input.keyboard.addKey('ENTER');
+    keyP.on('down', () => {
+      this.cameras.main.fadeOut(1000, 0, 0, 0);
+      this.scene.start('play-again', { song: this.ending });
+    });
   }
 
   update() {

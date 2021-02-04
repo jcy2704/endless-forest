@@ -77,6 +77,10 @@ For the Knight to be able to survive you need to dodge obstacles and kills monst
     ⌨️ 'S' or  🖱️ 'RIGHT MOUSE BUTTON'
 ```
 
+**Other**
+
+The `ENTER` key is used for basic interaction within the game. These basic interaction includes **skip boot scene, start game, submit leaderboard nickname, skip credits scene, etc**.
+
 ## ⚒️ Built With Phaser 3
 
 #### 🕹️ [Phaser 3](https://phaser.io)
