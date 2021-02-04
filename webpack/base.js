@@ -39,12 +39,11 @@ module.exports = {
         use: ['style-loader', 'css-loader'],
       },
       {
-        test: /\.(woff(2)?|ttf|eot)(\?v=\d+\.\d+\.\d+)?$/,
+        test: /\.ttf$/i,
         use: [
           {
             loader: 'file-loader',
             options: {
-              name: '[name].[ext]',
               outputPath: 'fonts/',
             },
           },

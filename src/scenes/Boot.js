@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import loadFont from '../javascript/fontLoader';
 import boot from '../assets/sound effects/boot.mp3';
+import arcadiaFont from '../assets/font/Arcadia-Regular.ttf';
 
 export default class Boot extends Phaser.Scene {
   constructor() {
@@ -10,7 +11,7 @@ export default class Boot extends Phaser.Scene {
   preload() {
     this.width = this.scale.width;
     this.height = this.scale.height;
-    loadFont('Arcadia', '../assets/font/Arcadia-Regular.ttf');
+    loadFont('Arcadia', arcadiaFont);
     this.load.audio('boot', boot);
     this.sound.pauseOnBlur = false;
   }

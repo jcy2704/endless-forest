@@ -32,6 +32,7 @@ import instructionBg from '../assets/paperbackground.png';
 import loadFont from '../javascript/fontLoader';
 import deathSound from '../assets/sound effects/death_4_alex.wav';
 import gameover from '../assets/sound effects/gameover.mp3';
+import monogram from '../assets/font/monogram_extended.ttf';
 
 export default class PreLoad extends Phaser.Scene {
   constructor() {
@@ -43,7 +44,7 @@ export default class PreLoad extends Phaser.Scene {
     this.height = this.scale.height;
     this.sound.pauseOnBlur = false;
     this.scene.pauseOnBlur = false;
-    loadFont('Monogram', '../assets/font/monogram_extended.ttf');
+    loadFont('Monogram', monogram);
 
     const progressBox = this.add.graphics();
     const progressBar = this.add.graphics();

@@ -4,12 +4,22 @@
   </a>
 </p>
 
-<h1 align="center">Endless Forest</h1>
+<h1 align="center">
+
+  [**Endless Forest**](https://inspiring-lovelace-c7ca1c.netlify.app/)
+
+</h1>
 
 <p align="center">
   <strong>Project/Game created by Steven Jack Chung</strong>
   <br>
   Project created using <a href="https://www.notion.so/Leaderboard-API-service-24c0c3c116974ac49488d4eb0267ade3">Leaderboard API</a> and <a href="https://phaser.io">Phaser 3</a>
+</p>
+
+<p align="center">
+  <a href="https://inspiring-lovelace-c7ca1c.netlify.app/">
+    <img src="https://img.shields.io/badge/PLAY%20ENDLESS%20FOREST-darkgreen?style=for-the-badge">
+  </a>
 </p>
 
 <p align="center">
@@ -42,9 +52,9 @@
 
 ## 🌳 About Endless Forest
 
-**Endless Forest** is a platform game based on an endless runner genre. You may have heard about Temple Run, Subway Surfer, and other similar games. Although Endless Forest is a 2D game, it falls in a similar genre with those games.
+[**Endless Forest**](https://inspiring-lovelace-c7ca1c.netlify.app/) is a platform game based on an endless runner genre. You may have heard about Temple Run, Subway Surfer, and other similar games. Although Endless Forest is a 2D game, it falls in a similar genre with those games.
 
-The story behind **Endless Forest** is about a Knight walking peacefully, but little did he know, he entered the **Endless Forest**. Filled with obstacles and monsters, the knight tries to survive by dodging the obstacles and killing the monsters.
+The story behind [**Endless Forest**](https://inspiring-lovelace-c7ca1c.netlify.app/) is about a Knight walking peacefully, but little did he know, he entered the [**Endless Forest**](https://inspiring-lovelace-c7ca1c.netlify.app/). Filled with obstacles and monsters, the knight tries to survive by dodging the obstacles and killing the monsters.
 
 The more time survived the highest score.
 

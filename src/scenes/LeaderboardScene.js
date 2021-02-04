@@ -8,6 +8,7 @@ export default class LeaderboardScene extends Phaser.Scene {
   init(data) {
     this.subScore = data.score;
     this.kills = data.kills;
+    this.ending = data.song;
   }
 
   preload() {
@@ -90,7 +91,7 @@ export default class LeaderboardScene extends Phaser.Scene {
 
         this.cameras.main.fadeOut(1000, 0, 0, 0);
 
-        this.scene.start('leaderboard-table', { player, score: this.totalScore });
+        this.scene.start('leaderboard-table', { player, score: this.totalScore, song: this.ending });
       }
     });
   }
