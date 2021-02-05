@@ -45,7 +45,7 @@ export default class GameOver extends Phaser.Scene {
     });
     score.setOrigin(0.5, 0.5);
 
-    this.ending = this.sound.add('ending', { volume: 0.25 });
+    this.ending = this.sound.add('ending', { volume: 0.25, loop: true });
 
     this.time.delayedCall(3000, () => {
       this.ending.play();
