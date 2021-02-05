@@ -7,7 +7,7 @@
  * @param {number} widthDiff
  */
 
-export default (scene, heightDiff, image, origin, widthDiff = 0) => {
+const createAligned = (scene, heightDiff, image, origin, widthDiff = 0) => {
   let x = 0;
   let l = scene.scale.width / 2;
   let m;
@@ -31,3 +31,5 @@ export default (scene, heightDiff, image, origin, widthDiff = 0) => {
 
   return m;
 };
+
+module.exports = createAligned;

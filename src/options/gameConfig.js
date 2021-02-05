@@ -1,12 +1,10 @@
 // global game options
-export default {
+const gameConfig = {
   drop: 1,
 
   dropForce: 150,
 
   platformSpeed: 300,
-
-  mountainSpeed: 80,
 
   spawnRange: [80, 300],
 
@@ -30,10 +28,6 @@ export default {
 
   scoreSpeed: 500,
 
-  skeletonSpawnRange: [0, 3],
-
-  skeletonSpawnDistance: [0, 150],
-
   skeletonSpawnRate: 6000,
 
   spikeWidth: 56,
@@ -44,3 +38,5 @@ export default {
 
   spikeSpawnRate: 10000,
 };
+
+module.exports = gameConfig;
